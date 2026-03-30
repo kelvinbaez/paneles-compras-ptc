@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar Tecnologico — Moon Palace PTC</title>
+<style>
+:root {
+  --navy: #1B3A5F;
+  --gold: #C8992A;
+  --blue: #2E6FAD;
+  --bg: #F2F4F8;
+  --green: #2ECC71;
+  --red: #E74C3C;
+  --orange: #F39C12;
+  --gray: #95A5A6;
+  --dark: #2c3e50;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: #333; line-height: 1.5; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #1B3A5F, #0d2240);
+  color: white;
+  padding: 24px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.header h1 { font-size: 1.6rem; margin: 0; letter-spacing: 0.5px; }
+.header .subtitle { color: var(--gold); font-size: 0.9rem; margin-top: 4px; }
+.header .date-info { text-align: right; font-size: 0.8rem; opacity: 0.8; }
+
+/* KPI CARDS */
+.kpi-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 20px 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.kpi-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px 20px;
+  border-left: 4px solid var(--navy);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+.kpi-card.active-filter { outline: 3px solid var(--gold); }
+.kpi-card .label { font-size: 0.75rem; color: var(--gray); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+.kpi-card .value { font-size: 1.8rem; font-weight: 700; color: var(--navy); margin: 4px 0; }
+.kpi-card .detail { font-size: 0.8rem; color: #666; }
+.kpi-card .click-hint { position: absolute; bottom: 6px; right: 10px; font-size: 0.65rem; color: var(--gray); opacity: 0; transition: opacity 0.2s; }
+.kpi-card:hover .click-hint { opacity: 1; }
+.kpi-card:nth-child(2) { border-left-color: var(--blue); }
+.kpi-card:nth-child(3) { border-left-color: var(--green); }
+.kpi-card:nth-child(4) { border-left-color: var(--gold); }
+
+/* SEARCH */
+.search-container {
+  padding: 0 30px 10px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.search-input {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  width: 300px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--blue); }
+.filter-clear {
+  display: none;
+  padding: 6px 14px;
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.filter-clear:hover { background: #b8891a; }
+
+/* TABS */
+.tabs-container {
+  padding: 10px 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tab {
+  padding: 8px 20px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.2s;
+}
+.tab:hover { border-color: var(--blue); color: var(--blue); }
+.tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+/* CONTENT */
+.content-area {
+  padding: 20px 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* TENDENCIA */
+.tendencia-box {
+  background: linear-gradient(135deg, #e8f0fe, #f0f4ff);
+  border-left: 4px solid var(--blue);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.tendencia-box h3 { color: var(--navy); font-size: 1rem; margin-bottom: 8px; }
+.tendencia-box p { font-size: 0.9rem; color: #444; }
+
+/* CARDS GRID */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+.news-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  border-top: 3px solid transparent;
+}
+.news-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+.news-card.relevancia-alta { border-top-color: var(--green); }
+.news-card.relevancia-media { border-top-color: var(--gold); }
+.news-card.relevancia-baja { border-top-color: var(--gray); }
+
+.news-card .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.news-card h4 { font-size: 0.95rem; color: var(--navy); line-height: 1.4; flex: 1; }
+.news-card h4 a { color: var(--navy); text-decoration: none; }
+.news-card h4 a:hover { color: var(--blue); text-decoration: underline; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-alta { background: #d4edda; color: #155724; }
+.badge-media { background: #fff3cd; color: #856404; }
+.badge-baja { background: #e9ecef; color: #6c757d; }
+.badge-video { background: #ffe0e0; color: #c0392b; }
+
+.news-card .meta { font-size: 0.78rem; color: var(--gray); margin-bottom: 8px; }
+.news-card .resumen { font-size: 0.85rem; color: #555; flex: 1; margin-bottom: 10px; }
+.news-card .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg);
+  border-radius: 10px;
+  font-size: 0.7rem;
+  color: var(--navy);
+  font-weight: 500;
+}
+
+/* VIDEO CARD */
+.video-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.2s;
+}
+.video-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+.video-card .thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+.video-card .video-info { padding: 14px; }
+.video-card h4 { font-size: 0.9rem; color: var(--navy); margin-bottom: 6px; }
+.video-card .canal { font-size: 0.78rem; color: var(--gray); margin-bottom: 6px; }
+.video-card .video-link {
+  display: inline-block;
+  padding: 6px 14px;
+  background: var(--red);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.video-card .video-link:hover { background: #c0392b; }
+
+/* SECTION TITLE */
+.section-title {
+  font-size: 1rem;
+  color: var(--navy);
+  margin: 24px 0 14px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--gold);
+  display: inline-block;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--gray);
+  font-size: 0.78rem;
+  margin-top: 30px;
+}
+
+/* NO RESULTS */
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: var(--gray);
+  font-size: 1rem;
+}
+
+/* CHANNEL CARDS */
+.channel-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  border-left: 4px solid var(--navy);
+}
+.channel-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+.channel-card .ch-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.channel-card .ch-name { font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+.channel-card .ch-name a { color: var(--navy); text-decoration: none; }
+.channel-card .ch-name a:hover { color: var(--blue); text-decoration: underline; }
+.channel-card .ch-subs { background: var(--red); color: white; padding: 3px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+.channel-card .ch-creator { font-size: 0.82rem; color: var(--gray); margin-bottom: 6px; }
+.channel-card .ch-desc { font-size: 0.85rem; color: #555; flex: 1; margin-bottom: 10px; }
+.channel-card .ch-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.channel-card .ch-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.badge-nivel { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; background: #e8f0fe; color: var(--blue); }
+.badge-pais { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; background: #fff3cd; color: #856404; }
+.ch-visit-btn {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--red);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.ch-visit-btn:hover { background: #c0392b; }
+
+/* VIDEO GALLERY CARDS */
+.vid-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.25s;
+  cursor: pointer;
+}
+.vid-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+.vid-thumb-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: #000;
+}
+.vid-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.vid-card:hover .vid-thumb-wrap img { transform: scale(1.05); }
+.vid-play-icon {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px; height: 60px;
+  background: rgba(255,0,0,0.85);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.vid-card:hover .vid-play-icon { background: rgba(255,0,0,1); transform: translate(-50%, -50%) scale(1.1); }
+.vid-play-icon::after { content: ''; border-left: 18px solid white; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 4px; }
+.vid-duration {
+  position: absolute;
+  bottom: 8px; right: 8px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.vid-info { padding: 14px; }
+.vid-info h4 { font-size: 0.9rem; color: var(--navy); margin-bottom: 6px; line-height: 1.35; }
+.vid-info .vid-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.vid-info .vid-canal { font-size: 0.78rem; color: var(--gray); font-weight: 600; }
+.vid-info .vid-fecha { font-size: 0.72rem; color: var(--gray); }
+.vid-info .vid-resumen { font-size: 0.82rem; color: #555; margin-bottom: 10px; }
+.vid-info .vid-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .header { padding: 16px 20px; }
+  .header h1 { font-size: 1.2rem; }
+  .kpi-container, .search-container, .tabs-container, .content-area { padding-left: 16px; padding-right: 16px; }
+  .search-input { width: 100%; }
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+/* PRINT */
+@media print {
+  .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .tabs-container, .search-container, .filter-clear, .click-hint { display: none !important; }
+  .tab-content { display: block !important; page-break-inside: avoid; }
+  .news-card, .video-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+  .kpi-card { box-shadow: none; border: 1px solid #ddd; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>Radar Tecnologico</h1>
+    <div class="subtitle">Moon Palace The Grand — Punta Cana</div>
+  </div>
+  <div class="date-info">
+    Actualizado: 29/03/2026<br>
+    Fuente: WebSearch
+  </div>
+</div>
+
+<!-- KPI CARDS -->
+<div class="kpi-container">
+  <div class="kpi-card" onclick="applyKpiFilter('all')">
+    <div class="label">Total Noticias</div>
+    <div class="value" id="kpi-total">16</div>
+    <div class="detail">articulos encontrados</div>
+    <div class="click-hint">Click para filtrar</div>
+  </div>
+  <div class="kpi-card" onclick="applyKpiFilter('videos')">
+    <div class="label">Videos</div>
+    <div class="value" id="kpi-videos">17</div>
+    <div class="detail">videos 2026 en espanol</div>
+    <div class="click-hint">Click para ver</div>
+  </div>
+  <div class="kpi-card" onclick="applyKpiFilter('temas')">
+    <div class="label">Temas Activos</div>
+    <div class="value" id="kpi-temas">2</div>
+    <div class="detail">categorias monitoreadas</div>
+    <div class="click-hint">Click para filtrar</div>
+  </div>
+  <div class="kpi-card" onclick="applyKpiFilter('alta')">
+    <div class="label">Alta Relevancia</div>
+    <div class="value" id="kpi-alta">0</div>
+    <div class="detail">noticias imperdibles</div>
+    <div class="click-hint">Click para filtrar</div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-container">
+  <input type="text" class="search-input" placeholder="Buscar noticias..." oninput="filterBySearch(this.value)" id="searchInput">
+  <button class="filter-clear" id="btnClearFilter" onclick="clearAllFilters()">Quitar filtro</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs-container" id="tabsContainer"></div>
+
+<!-- CONTENT -->
+<div class="content-area" id="contentArea"></div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Radar Tecnologico — Generado automaticamente por Claude Code | Moon Palace The Grand PTC | 29/03/2026
+</div>
+
+<script>
+const VIDEOS = [
+  {"titulo":"La IA se AUTOMEJORA - Nuevo MiniMax 2.7","canal":"Xavier Mitjana","videoId":"k2X3Deu8k3k","fecha":"2026-03-27","resumen":"An\u00e1lisis del nuevo modelo MiniMax 2.7 que tiene la capacidad de automejorarse. Xavier explica las implicaciones de esta tecnolog\u00eda revolucionaria.","tags":["MiniMax","Automejora","Modelos"]},
+  {"titulo":"Alumno de 10. SIN CEREBRO. La IA ha ROTO la educaci\u00f3n.","canal":"Xavier Mitjana","videoId":"8v3oA3Rvo0s","fecha":"2026-03-25","resumen":"An\u00e1lisis cr\u00edtico de c\u00f3mo la IA est\u00e1 transformando el sistema educativo. Estudiantes sacan 10 sin entender nada.","tags":["Educaci\u00f3n","Debate","Impacto IA"]},
+  {"titulo":"La IA toma el control de las luces de mi estudio","canal":"Nate Gentile","videoId":"lKUpiiRFte4","fecha":"2026-03-25","resumen":"Nate conecta IA para controlar la iluminaci\u00f3n de su estudio en tiempo real. Demostraci\u00f3n pr\u00e1ctica de IA + hardware.","tags":["IoT","IA","Hardware"]},
+  {"titulo":"As\u00ed usan NotebookLM en el MIT - Aprende en TIEMPO RECORD","canal":"Xavier Mitjana","videoId":"OefqBTBREgY","fecha":"2026-03-22","resumen":"C\u00f3mo el MIT utiliza NotebookLM de Google para acelerar el aprendizaje. Aplicaciones pr\u00e1cticas para estudiantes y profesionales.","tags":["NotebookLM","MIT","Aprendizaje"]},
+  {"titulo":"Universitarios en ZONA DE PELIGRO. \u00bfLa IA destruir\u00e1 su trabajo?","canal":"Xavier Mitjana","videoId":"YA5VjP-Apu8","fecha":"2026-03-19","resumen":"Debate sobre el impacto de la IA en el futuro laboral de los universitarios. Qu\u00e9 carreras est\u00e1n en riesgo y cu\u00e1les se benefician.","tags":["Empleo","Universidad","Futuro"]},
+  {"titulo":"Toda la IA que necesitas 100% GRATIS e ILIMITADA","canal":"Xavier Mitjana","videoId":"Vo7jImbFe2A","fecha":"2026-03-17","resumen":"Gu\u00eda completa de herramientas de IA gratuitas e ilimitadas. Perfecto para quienes quieren usar IA sin gastar dinero.","tags":["Gratis","Herramientas","Tutorial"]},
+  {"titulo":"La IA tom\u00f3 el control de mi ordenador (y no pude pararlo)","canal":"Nate Gentile","videoId":"_wAHiARD9GI","fecha":"2026-03-16","resumen":"Nate prueba un agente de IA que toma el control total de su PC. El resultado es impresionante y aterrador a partes iguales.","tags":["Agente IA","Desktop","Demo"]},
+  {"titulo":"Google DESTRUYE Excel - La IA domina GOOGLE SHEETS","canal":"Xavier Mitjana","videoId":"-QMtV6nX-HU","fecha":"2026-03-12","resumen":"Las nuevas funciones de IA en Google Sheets que compiten directamente con Excel. Tutorial pr\u00e1ctico para aprovecharlas.","tags":["Google Sheets","Excel","Automatizaci\u00f3n"]},
+  {"titulo":"C\u00f3mo tener tu IA ILIMITADA, POTENTE y PRIVADA","canal":"Xavier Mitjana","videoId":"g439ibLMBVQ","fecha":"2026-03-08","resumen":"Tutorial para configurar tu propia IA local, potente y sin l\u00edmites de uso. Ideal para privacidad y ahorro.","tags":["IA Local","Privacidad","Tutorial"]},
+  {"titulo":"NotebookLM hizo MI v\u00eddeo. El resultado asusta.","canal":"Xavier Mitjana","videoId":"1Vixa80IW4s","fecha":"2026-03-05","resumen":"Experimento: NotebookLM de Google genera un video completo. Los resultados son sorprendentemente buenos.","tags":["NotebookLM","Video IA","Google"]},
+  {"titulo":"NotebookLM MEJORA su FUNCI\u00d3N m\u00e1s INTERESANTE - Control total","canal":"Xavier Mitjana","videoId":"AC8O9FIu9mg","fecha":"2026-03-03","resumen":"Las nuevas funciones de NotebookLM que dan control total al usuario. Tutorial de las mejoras m\u00e1s \u00fatiles.","tags":["NotebookLM","Google","Tutorial"]},
+  {"titulo":"CHINA mete en tu ordenador la IA m\u00e1s BESTIA","canal":"Xavier Mitjana","videoId":"uHnMk8V1VZU","fecha":"2026-03-01","resumen":"An\u00e1lisis de la \u00faltima IA china que puedes ejecutar en tu ordenador local. Rendimiento impresionante y gratuito.","tags":["China","IA Local","Open Source"]},
+  {"titulo":"Cuando tu Agente de IA te borra la BD","canal":"Ringa Tech","videoId":"pGq_pG6wJ-o","fecha":"2026-02-18","resumen":"Historia real de un agente de IA que borr\u00f3 una base de datos. Lecci\u00f3n importante sobre seguridad al usar agentes aut\u00f3nomos.","tags":["Agentes IA","Seguridad","Bases de Datos"]},
+  {"titulo":"Memoria para tu Agente de IA en Python (Sin Frameworks)","canal":"Ringa Tech","videoId":"iTDGQg-g438","fecha":"2026-02-04","resumen":"Tutorial paso a paso para implementar memoria en agentes de IA usando Python puro, sin frameworks. C\u00f3digo explicado desde cero.","tags":["Python","Agentes","Tutorial"]},
+  {"titulo":"\u00bfPuedo crear un juego que use Agentes de IA?","canal":"Ringa Tech","videoId":"PU30VIg0QI4","fecha":"2026-01-30","resumen":"Experimento pr\u00e1ctico creando un videojuego que integra agentes de IA. Resultado sorprendente y c\u00f3digo disponible.","tags":["Agentes IA","Juegos","Experimento"]},
+  {"titulo":"Crea un Laboratorio de IA y Prueba Modelos Avanzados","canal":"Ringa Tech","videoId":"yJlVqfO2nP0","fecha":"2026-01-24","resumen":"C\u00f3mo montar tu propio laboratorio para probar modelos de IA avanzados. Configuraci\u00f3n paso a paso con visualizaciones claras.","tags":["Lab IA","Modelos","Setup"]},
+  {"titulo":"Expectativas vs Realidad: Predicciones de IA 2025","canal":"DotCSV","videoId":"P5HbSqZcClo","fecha":"2026-01-02","resumen":"Carlos Santana analiza sus predicciones de IA para 2025: cu\u00e1les acert\u00f3, cu\u00e1les fall\u00f3 y qu\u00e9 viene en 2026.","tags":["Predicciones","An\u00e1lisis","Tendencias"]}
+];
+
+const CANALES = [
+  {"nombre":"DotCSV","creador":"Carlos Santana","suscriptores":"650K+","url":"https://www.youtube.com/@DotCSV","pais":"Espa\u00f1a","descripcion":"\u00c9tica de la IA, modelos generativos, an\u00e1lisis t\u00e9cnico. El canal de referencia en espa\u00f1ol sobre IA con enfoque cr\u00edtico y riguroso. En 2026 ampli\u00f3 cobertura a IA generativa, regulaci\u00f3n europea y sesgos algor\u00edtmicos.","tags":["IA General","Divulgaci\u00f3n","An\u00e1lisis"],"nivel":"Intermedio-Avanzado"},
+  {"nombre":"Ringa Tech","creador":"Ringa","suscriptores":"304K+","url":"https://www.youtube.com/@RingaTech","pais":"Latinoam\u00e9rica","descripcion":"Programaci\u00f3n, IA y seguridad inform\u00e1tica. Videos con visualizaciones claras para aprender a programar y aplicar conceptos de inteligencia artificial desde cero.","tags":["Programaci\u00f3n","IA Pr\u00e1ctica","Tutoriales"],"nivel":"Principiante-Intermedio"},
+  {"nombre":"Xavier Mitjana","creador":"Xavier Mitjana","suscriptores":"120K+","url":"https://www.youtube.com/@xaviermitjana","pais":"Espa\u00f1a","descripcion":"Modelos de lenguaje, \u00e9tica de la IA, IA generativa. Enfoque did\u00e1ctico que traduce conceptos complejos en explicaciones accesibles. Tutoriales sobre ChatGPT y Stable Diffusion.","tags":["LLMs","Tutoriales","ChatGPT"],"nivel":"Principiante-Intermedio"},
+  {"nombre":"Machinelearnear","creador":"","suscriptores":"95K+","url":"https://www.youtube.com/@machinelearnear","pais":"Espa\u00f1a","descripcion":"Tutoriales pr\u00e1cticos de machine learning, Python y proyectos. Ideal para desarrolladores junior y estudiantes que quieren aprender a programar modelos desde cero.","tags":["Machine Learning","Python","Proyectos"],"nivel":"Intermedio"},
+  {"nombre":"Nate Gentile","creador":"Nate Gentile","suscriptores":"2.5M+","url":"https://www.youtube.com/@NateGentile7","pais":"Espa\u00f1a","descripcion":"Divulgador tech y referente digital. Analiza tendencias tecnol\u00f3gicas incluyendo IA, hardware y el futuro de la tecnolog\u00eda. Anticipa que 2026 ser\u00e1 clave para la transformaci\u00f3n con IA.","tags":["Tech General","Hardware","Tendencias"],"nivel":"Todos"},
+  {"nombre":"Platzi","creador":"Freddy Vega","suscriptores":"4.5M+","url":"https://www.youtube.com/@Platzi","pais":"Colombia/M\u00e9xico","descripcion":"Plataforma educativa con contenido sobre programaci\u00f3n, IA, data science y m\u00e1s. Cursos estructurados desde cero hasta avanzado. Ofrece eventos gratuitos de IA en Latinoam\u00e9rica.","tags":["Educaci\u00f3n","Programaci\u00f3n","IA"],"nivel":"Todos"},
+  {"nombre":"EDteam","creador":"","suscriptores":"1.8M+","url":"https://www.youtube.com/@EDteam","pais":"Per\u00fa","descripcion":"Formaci\u00f3n estructurada en tecnolog\u00eda: programaci\u00f3n, IA, dise\u00f1o. Tutoriales y cursos especializados con enfoque pr\u00e1ctico latinoamericano.","tags":["Educaci\u00f3n","Cursos","Tecnolog\u00eda"],"nivel":"Principiante-Intermedio"},
+  {"nombre":"Estudio De La IA","creador":"","suscriptores":"10K+","url":"https://www.youtube.com/@EstudioDeLaIA","pais":"Espa\u00f1a","descripcion":"Fundamentos de IA, modelos generativos, herramientas emergentes. Cubre desde redes neuronales hasta ChatGPT, Midjourney y Gemini con perspectiva educativa y profesional.","tags":["Fundamentos","Herramientas IA","Educaci\u00f3n"],"nivel":"Principiante"},
+  {"nombre":"V\u00edctor P\u00e9rez IA","creador":"V\u00edctor P\u00e9rez","suscriptores":"2.8K+","url":"https://www.youtube.com/@victorperezia","pais":"Espa\u00f1a","descripcion":"Automatizaci\u00f3n con IA, herramientas sin c\u00f3digo, productividad digital. Enfocado en emprendedores y profesionales que quieren usar IA sin programar.","tags":["No-Code","Automatizaci\u00f3n","Productividad"],"nivel":"Principiante"}
+];
+
+const DATA = {
+  "fecha": "2026-03-29",
+  "temas": {
+    "ia": {
+      "nombre": "Inteligencia Artificial",
+      "tendencia": "Marzo 2026 ha sido un mes hist\u00f3rico para la IA con el lanzamiento simult\u00e1neo de GPT-5.4, Gemini 3.1 Ultra y Grok 4.20. La IA agente pas\u00f3 de demos a producci\u00f3n empresarial, con el Model Context Protocol alcanzando 97 millones de instalaciones. Las empresas de IA alcanzan ingresos r\u00e9cord: OpenAI supera $25B anualizados y Anthropic se acerca a $19B. En video, las generaciones de IA ya producen clips coherentes de 2 minutos, democratizando la producci\u00f3n audiovisual profesional.",
+      "items": [
+        {"titulo":"GPT-5.4 lanzado: ventana de 1 mill\u00f3n de tokens y rendimiento superior al humano","fuente":"Build Fast with AI","url":"https://www.buildfastwithai.com/blogs/ai-models-march-2026-releases","fecha":"2026-03-20","resumen":"OpenAI lanz\u00f3 GPT-5.4 en versiones Standard, Thinking y Pro. Soporta hasta 1.05 millones de tokens de contexto y obtuvo 75% en el benchmark OSWorld-V, superando el 72.4% de l\u00ednea base humana.","tipo":"articulo","relevancia":"alta","tags":["OpenAI","GPT-5.4","LLM"]},
+        {"titulo":"Gemini 3.1 Ultra y Grok 4.20: la triple competencia de modelos frontier","fuente":"Build Fast with AI","url":"https://www.buildfastwithai.com/blogs/ai-models-march-2026-releases","fecha":"2026-03-20","resumen":"Google lanz\u00f3 Gemini 3.1 Ultra con razonamiento multimodal nativo, y xAI present\u00f3 Grok 4.20 con acceso web en tiempo real mejorado. Tres modelos frontier lanzados la misma semana.","tipo":"articulo","relevancia":"alta","tags":["Google","Gemini","xAI","Grok"]},
+        {"titulo":"Qwen 3.5 Small de Alibaba supera a GPT en benchmarks matem\u00e1ticos","fuente":"Digital Applied","url":"https://www.digitalapplied.com/blog/march-2026-ai-roundup-month-that-changed-everything","fecha":"2026-03-18","resumen":"Alibaba lanz\u00f3 la serie Qwen 3.5 Small con 4 modelos (0.8B a 9B par\u00e1metros). El modelo de 9B obtuvo 81.7 en GPQA Diamond vs 71.5 de GPT-OSS-120B, demostrando que modelos peque\u00f1os pueden competir.","tipo":"articulo","relevancia":"alta","tags":["Alibaba","Qwen","Open Source"]},
+        {"titulo":"Model Context Protocol alcanza 97 millones de instalaciones","fuente":"Crescendo AI","url":"https://www.crescendo.ai/news/latest-ai-news-and-updates","fecha":"2026-03-25","resumen":"El Model Context Protocol (MCP) alcanz\u00f3 97 millones de instalaciones. Todos los grandes proveedores de IA ahora ofrecen herramientas compatibles con MCP, consolid\u00e1ndolo como est\u00e1ndar de la industria.","tipo":"articulo","relevancia":"alta","tags":["MCP","Est\u00e1ndares","Infraestructura"]},
+        {"titulo":"Manus lanza app de escritorio: agentes IA operan directamente en tu PC","fuente":"Labla.org","url":"https://www.labla.org/latest-ai-model-releases-past-24-hours/ai-model-releases-industry-updates-march-27-28-2026/","fecha":"2026-03-27","resumen":"Manus, respaldado por Meta, lanz\u00f3 una app de escritorio que permite a agentes IA operar directamente en dispositivos locales, interactuando con archivos, aplicaciones y flujos de trabajo del usuario.","tipo":"articulo","relevancia":"alta","tags":["Agentes IA","Desktop","Manus"]},
+        {"titulo":"Morgan Stanley advierte: un salto en IA viene en 2026 y el mundo no est\u00e1 listo","fuente":"Fortune","url":"https://fortune.com/2026/03/13/elon-musk-morgan-stanley-ai-leap-2026/","fecha":"2026-03-13","resumen":"Morgan Stanley public\u00f3 un informe advirtiendo que un avance significativo en IA est\u00e1 llegando en 2026 y que la mayor\u00eda del mundo no est\u00e1 preparado para su impacto en la econom\u00eda y el empleo.","tipo":"articulo","relevancia":"media","tags":["Econom\u00eda","Predicciones","Morgan Stanley"]},
+        {"titulo":"Adobe Firefly Custom Models: entrena tu propio generador de im\u00e1genes","fuente":"Forbes News Mag","url":"https://www.forbesnewsmag.com/2026/03/05/new-ai-tools-launched-in-2026/","fecha":"2026-03-05","resumen":"Adobe lanz\u00f3 Firefly Custom Models en beta p\u00fablica, permitiendo a usuarios entrenar generadores de im\u00e1genes IA con sus propios activos creativos, preservando elementos espec\u00edficos de marca.","tipo":"articulo","relevancia":"media","tags":["Adobe","Generaci\u00f3n Im\u00e1genes","Creatividad"]},
+        {"titulo":"Video IA en 2026: de clips de 4 segundos a generaciones coherentes de 2 minutos","fuente":"LTX Studio","url":"https://ltx.studio/blog/ai-video-trends","fecha":"2026-03-15","resumen":"La generaci\u00f3n de video con IA dio un salto masivo: de clips de 4 segundos en 2024 a generaciones coherentes de 2 minutos en 2026. Un comercial de 30 segundos que costar\u00eda $50K ahora se genera por menos de $100.","tipo":"articulo","relevancia":"media","tags":["Video IA","Producci\u00f3n","Democratizaci\u00f3n"]}
+      ]
+    },
+    "productividad": {
+      "nombre": "Productividad y Herramientas",
+      "tendencia": "El ecosistema no-code y de automatizaci\u00f3n sigue creciendo aceleradamente con un mercado proyectado a $44.5B en 2026. Power BI recibi\u00f3 actualizaciones importantes en marzo incluyendo flujos translit\u00edcos que permiten editar datos directamente desde reportes. Excel ahora tiene Agent Mode disponible en Desktop y Power Query completo en la web. Replit destaca como plataforma no-code con su Agente Aut\u00f3nomo que construye apps desde lenguaje natural.",
+      "items": [
+        {"titulo":"Power BI Marzo 2026: flujos translit\u00edcos y tooltips con drill-down","fuente":"Microsoft Power BI Blog","url":"https://powerbi.microsoft.com/en-us/blog/power-bi-march-2026-feature-summary/","fecha":"2026-03-19","resumen":"La actualizaci\u00f3n de marzo de Power BI introduce flujos translit\u00edcos que permiten editar registros y llamar APIs externas directamente desde reportes. Tooltips modernos ahora soportan drill-down sin men\u00fa contextual.","tipo":"articulo","relevancia":"alta","tags":["Power BI","Microsoft","Reportes"]},
+        {"titulo":"Excel Agent Mode ya disponible: automatiza tareas repetitivas en Desktop","fuente":"Awesome Analytics","url":"https://awesomeanalytics.in/latest-excel-updates-in-2026-explained-simply/","fecha":"2026-03-10","resumen":"Excel lanz\u00f3 Agent Mode como disponibilidad general en Desktop, reduciendo trabajo manual repetitivo. Tambi\u00e9n se agregaron nuevas funciones de importaci\u00f3n para traer datos externos de forma estructurada.","tipo":"articulo","relevancia":"alta","tags":["Excel","Microsoft","Automatizaci\u00f3n"]},
+        {"titulo":"Power Query ahora disponible completo en Excel para la web","fuente":"ICAEW","url":"https://www.icaew.com/technical/technology/excel-community/excel-community-articles/2026/new-tech-features-dec-feb-26","fecha":"2026-03-01","resumen":"La experiencia completa de Power Query lleg\u00f3 a Excel para la web, permitiendo limpieza y transformaci\u00f3n avanzada de datos directamente en el navegador sin necesidad de la versi\u00f3n desktop.","tipo":"articulo","relevancia":"alta","tags":["Excel","Power Query","Web"]},
+        {"titulo":"Replit Autonomous Agent 3: construye apps completas desde texto","fuente":"Replit","url":"https://replit.com/discover/best-no-code-app-builder","fecha":"2026-03-15","resumen":"Replit present\u00f3 su Agente Aut\u00f3nomo versi\u00f3n 3 que construye, prueba y despliega aplicaciones completas a partir de instrucciones en lenguaje natural. Combina simplicidad no-code con poder de desarrollo completo.","tipo":"articulo","relevancia":"alta","tags":["No-Code","Replit","Agentes"]},
+        {"titulo":"Alibaba Wukong: plataforma empresarial para gestionar m\u00faltiples agentes IA","fuente":"Labla.org","url":"https://www.labla.org/latest-ai-model-releases-past-24-hours/ai-model-releases-industry-updates-march-27-28-2026/","fecha":"2026-03-27","resumen":"Alibaba lanz\u00f3 Wukong, una plataforma empresarial que gestiona m\u00faltiples agentes IA para tareas como edici\u00f3n de documentos, aprobaciones e investigaci\u00f3n, integr\u00e1ndose con herramientas de mensajer\u00eda.","tipo":"articulo","relevancia":"media","tags":["Alibaba","Enterprise","Agentes"]},
+        {"titulo":"Zapier y Make lideran automatizaci\u00f3n workflow con integraciones IA en 2026","fuente":"Noloco","url":"https://noloco.io/blog/best-workflow-automation-tools","fecha":"2026-03-12","resumen":"Zapier supera 5,000 integraciones de apps y Make fortalece su lienzo visual con integraciones IA avanzadas. El mercado de herramientas low-code alcanzar\u00e1 $44.5B en 2026 seg\u00fan Gartner.","tipo":"articulo","relevancia":"media","tags":["Zapier","Make","Automatizaci\u00f3n"]},
+        {"titulo":"Perplexity Personal Computer: un Mac Mini como asistente digital permanente","fuente":"Labla.org","url":"https://www.labla.org/latest-ai-model-releases-past-24-hours/ai-model-releases-industry-updates-march-27-28-2026/","fecha":"2026-03-27","resumen":"Perplexity lanz\u00f3 Personal Computer, un sistema basado en Mac Mini dise\u00f1ado para funcionar continuamente como asistente digital, conectando archivos y apps locales con los servicios cloud de Perplexity.","tipo":"articulo","relevancia":"media","tags":["Perplexity","Hardware","Asistente"]},
+        {"titulo":"Mercado no-code proyectado a $44.5B: Gartner predice 75% de apps usar\u00e1n low-code","fuente":"Jotform Blog","url":"https://www.jotform.com/blog/no-code-tools/","fecha":"2026-03-08","resumen":"El mercado global de tecnolog\u00edas low-code alcanzar\u00e1 $44.5B en 2026. Gartner predice que el 75% del desarrollo de nuevas aplicaciones utilizar\u00e1 herramientas low-code, consolidando la tendencia de democratizaci\u00f3n.","tipo":"articulo","relevancia":"baja","tags":["No-Code","Mercado","Gartner"]}
+      ]
+    }
+  }
+};
+
+// ===== STATE =====
+let activeTab = null;
+let activeKpiFilter = null;
+let searchQuery = '';
+
+// ===== INIT =====
+function init() {
+  const temaKeys = Object.keys(DATA.temas);
+
+  // Calculate KPIs
+  let totalItems = 0, totalVideos = 0, totalAlta = 0;
+  temaKeys.forEach(k => {
+    const items = DATA.temas[k].items;
+    totalItems += items.length;
+    totalVideos += items.filter(i => i.tipo === 'video').length;
+    totalAlta += items.filter(i => i.relevancia === 'alta').length;
+  });
+  document.getElementById('kpi-total').textContent = totalItems;
+  document.getElementById('kpi-videos').textContent = totalVideos;
+  document.getElementById('kpi-temas').textContent = temaKeys.length;
+  document.getElementById('kpi-alta').textContent = totalAlta;
+
+  // Build tabs
+  const tabsEl = document.getElementById('tabsContainer');
+  temaKeys.forEach((k, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (i === 0 ? ' active' : '');
+    btn.textContent = DATA.temas[k].nombre;
+    btn.onclick = () => showTab(k, btn);
+    tabsEl.appendChild(btn);
+  });
+
+  // Add Videos tab
+  const videosBtn = document.createElement('button');
+  videosBtn.className = 'tab';
+  videosBtn.textContent = '\u25B6 Videos en Espa\u00f1ol';
+  videosBtn.style.background = '#ffe0e0';
+  videosBtn.style.borderColor = '#E74C3C';
+  videosBtn.style.color = '#c0392b';
+  videosBtn.onclick = () => showTab('videos', videosBtn);
+  tabsEl.appendChild(videosBtn);
+
+  // Add Canales tab
+  const canalesBtn = document.createElement('button');
+  canalesBtn.className = 'tab';
+  canalesBtn.textContent = 'Canales Recomendados';
+  canalesBtn.style.background = '#fff3cd';
+  canalesBtn.style.borderColor = '#C8992A';
+  canalesBtn.style.color = '#856404';
+  canalesBtn.onclick = () => showTab('canales', canalesBtn);
+  tabsEl.appendChild(canalesBtn);
+
+  // Build content
+  const contentEl = document.getElementById('contentArea');
+  temaKeys.forEach((k, i) => {
+    const tema = DATA.temas[k];
+    const div = document.createElement('div');
+    div.className = 'tab-content' + (i === 0 ? ' active' : '');
+    div.id = 'tab-' + k;
+    div.innerHTML = buildTabContent(tema);
+    contentEl.appendChild(div);
+  });
+
+  // Build Videos tab content
+  const videosDiv = document.createElement('div');
+  videosDiv.className = 'tab-content';
+  videosDiv.id = 'tab-videos';
+  videosDiv.innerHTML = buildVideosContent();
+  contentEl.appendChild(videosDiv);
+
+  // Build Canales tab content
+  const canalesDiv = document.createElement('div');
+  canalesDiv.className = 'tab-content';
+  canalesDiv.id = 'tab-canales';
+  canalesDiv.innerHTML = buildCanalesContent();
+  contentEl.appendChild(canalesDiv);
+
+  activeTab = temaKeys[0];
+}
+
+function buildTabContent(tema) {
+  let html = '';
+
+  // Tendencia
+  html += '<div class="tendencia-box"><h3>Tendencias de la Semana</h3><p>' + tema.tendencia + '</p></div>';
+
+  // Separate articles and videos
+  const articulos = tema.items.filter(i => i.tipo === 'articulo');
+  const videos = tema.items.filter(i => i.tipo === 'video');
+
+  // Articles
+  if (articulos.length > 0) {
+    html += '<h3 class="section-title">Noticias y Articulos</h3>';
+    html += '<div class="cards-grid">';
+    articulos.forEach(item => {
+      html += buildNewsCard(item);
+    });
+    html += '</div>';
+  }
+
+  // Videos
+  if (videos.length > 0) {
+    html += '<h3 class="section-title">Videos Destacados</h3>';
+    html += '<div class="cards-grid">';
+    videos.forEach(item => {
+      html += buildVideoCard(item);
+    });
+    html += '</div>';
+  }
+
+  return html;
+}
+
+function buildNewsCard(item) {
+  const badgeClass = 'badge-' + item.relevancia;
+  const badgeText = item.relevancia.charAt(0).toUpperCase() + item.relevancia.slice(1);
+  const tags = (item.tags || []).map(t => '<span class="tag">' + t + '</span>').join('');
+
+  return '<div class="news-card relevancia-' + item.relevancia + '" data-relevancia="' + item.relevancia + '" data-tipo="' + item.tipo + '" data-text="' + (item.titulo + ' ' + item.resumen + ' ' + item.fuente + ' ' + (item.tags||[]).join(' ')).toLowerCase() + '">'
+    + '<div class="card-header"><h4><a href="' + item.url + '" target="_blank" rel="noopener">' + item.titulo + '</a></h4><span class="badge ' + badgeClass + '">' + badgeText + '</span></div>'
+    + '<div class="meta">' + item.fuente + ' &middot; ' + formatDate(item.fecha) + '</div>'
+    + '<div class="resumen">' + item.resumen + '</div>'
+    + '<div class="tags">' + tags + '</div>'
+    + '</div>';
+}
+
+function buildVideoCard(item) {
+  const thumb = item.thumbnail || '';
+  return '<div class="video-card" data-relevancia="' + item.relevancia + '" data-tipo="video" data-text="' + (item.titulo + ' ' + item.resumen + ' ' + (item.canal||'')).toLowerCase() + '">'
+    + (thumb ? '<img class="thumb" src="' + thumb + '" alt="Video thumbnail" loading="lazy">' : '')
+    + '<div class="video-info">'
+    + '<h4>' + item.titulo + '</h4>'
+    + (item.canal ? '<div class="canal">' + item.canal + '</div>' : '')
+    + '<div class="resumen" style="font-size:0.8rem;margin-bottom:10px;">' + (item.resumen||'') + '</div>'
+    + '<a href="' + item.url + '" target="_blank" rel="noopener" class="video-link">&#9654; Ver video</a>'
+    + '</div></div>';
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+  return dateStr;
+}
+
+// ===== TABS =====
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  activeTab = id;
+  applyFilters();
+}
+
+// ===== KPI FILTER =====
+function applyKpiFilter(type) {
+  // Toggle
+  if (activeKpiFilter === type) {
+    clearAllFilters();
+    return;
+  }
+  activeKpiFilter = type;
+
+  // Highlight active card
+  document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter'));
+  const cards = document.querySelectorAll('.kpi-card');
+  if (type === 'all') cards[0].classList.add('active-filter');
+  else if (type === 'videos') {
+    cards[1].classList.add('active-filter');
+    // Switch to videos tab
+    const allTabs = document.querySelectorAll('.tabs-container .tab');
+    allTabs.forEach(t => { if (t.textContent.includes('Videos')) showTab('videos', t); });
+  }
+  else if (type === 'temas') cards[2].classList.add('active-filter');
+  else if (type === 'alta') cards[3].classList.add('active-filter');
+
+  document.getElementById('btnClearFilter').style.display = 'inline-block';
+  applyFilters();
+}
+
+function clearAllFilters() {
+  activeKpiFilter = null;
+  searchQuery = '';
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.kpi-card').forEach(c => c.classList.remove('active-filter'));
+  document.getElementById('btnClearFilter').style.display = 'none';
+  applyFilters();
+}
+
+// ===== SEARCH =====
+function filterBySearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  document.getElementById('btnClearFilter').style.display = (searchQuery || activeKpiFilter) ? 'inline-block' : 'none';
+  applyFilters();
+}
+
+// ===== APPLY ALL FILTERS =====
+function applyFilters() {
+  const allCards = document.querySelectorAll('.news-card, .video-card, .channel-card, .vid-card');
+  allCards.forEach(card => {
+    let show = true;
+
+    // KPI filter
+    if (activeKpiFilter === 'alta') {
+      show = card.dataset.relevancia === 'alta';
+    } else if (activeKpiFilter === 'video') {
+      show = card.dataset.tipo === 'video';
+    }
+
+    // Search filter
+    if (show && searchQuery) {
+      const text = card.dataset.text || '';
+      show = text.includes(searchQuery);
+    }
+
+    card.style.display = show ? '' : 'none';
+  });
+
+  // Show no-results message
+  document.querySelectorAll('.tab-content.active .cards-grid').forEach(grid => {
+    const visible = grid.querySelectorAll('.news-card:not([style*="display: none"]), .video-card:not([style*="display: none"]), .channel-card:not([style*="display: none"]), .vid-card:not([style*="display: none"])');
+    let noRes = grid.querySelector('.no-results');
+    if (visible.length === 0) {
+      if (!noRes) {
+        noRes = document.createElement('div');
+        noRes.className = 'no-results';
+        noRes.textContent = 'No se encontraron resultados con los filtros actuales.';
+        grid.appendChild(noRes);
+      }
+      noRes.style.display = '';
+    } else if (noRes) {
+      noRes.style.display = 'none';
+    }
+  });
+}
+
+// ===== VIDEOS =====
+function buildVideosContent() {
+  let html = '<div class="tendencia-box"><h3>\u25B6 Videos de IA en Espa\u00f1ol</h3>'
+    + '<p>Selecci\u00f3n de los mejores videos recientes sobre inteligencia artificial de los principales canales en espa\u00f1ol. '
+    + 'Haz clic en cualquier miniatura para ver el video en YouTube.</p></div>';
+
+  // Filter buttons by channel
+  const canales = [...new Set(VIDEOS.map(v => v.canal))];
+  html += '<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;">';
+  html += '<button class="tab active" onclick="filterVideos(\'all\', this)" style="font-size:0.8rem;padding:6px 14px;">Todos</button>';
+  canales.forEach(c => {
+    html += '<button class="tab" onclick="filterVideos(\'' + c.replace(/'/g, "\\'") + '\', this)" style="font-size:0.8rem;padding:6px 14px;">' + c + '</button>';
+  });
+  html += '</div>';
+
+  // Sort by date descending
+  const sorted = [...VIDEOS].sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+  html += '<div class="cards-grid" id="videosGrid">';
+  sorted.forEach(v => {
+    const thumb = 'https://img.youtube.com/vi/' + v.videoId + '/mqdefault.jpg';
+    const thumbHQ = 'https://img.youtube.com/vi/' + v.videoId + '/hqdefault.jpg';
+    const url = 'https://www.youtube.com/watch?v=' + v.videoId;
+    const tags = (v.tags || []).map(t => '<span class="tag">' + t + '</span>').join('');
+
+    html += '<div class="vid-card" data-canal="' + v.canal + '" data-text="' + (v.titulo + ' ' + v.canal + ' ' + v.resumen + ' ' + (v.tags||[]).join(' ')).toLowerCase() + '" onclick="window.open(\'' + url + '\', \'_blank\')">'
+      + '<div class="vid-thumb-wrap">'
+      + '<img src="' + thumbHQ + '" alt="' + v.titulo.replace(/"/g, '') + '" loading="lazy" onerror="this.src=\'' + thumb + '\'">'
+      + '<div class="vid-play-icon"></div>'
+      + '</div>'
+      + '<div class="vid-info">'
+      + '<h4>' + v.titulo + '</h4>'
+      + '<div class="vid-meta"><span class="vid-canal">' + v.canal + '</span><span class="vid-fecha">' + formatDate(v.fecha) + '</span></div>'
+      + '<div class="vid-resumen">' + v.resumen + '</div>'
+      + '<div class="vid-tags">' + tags + '</div>'
+      + '</div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function filterVideos(canal, btn) {
+  // Update active button
+  btn.parentElement.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Filter cards
+  document.querySelectorAll('#videosGrid .vid-card').forEach(card => {
+    if (canal === 'all' || card.dataset.canal === canal) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// ===== CANALES =====
+function buildCanalesContent() {
+  let html = '<div class="tendencia-box"><h3>Canales de YouTube sobre IA en Espa\u00f1ol</h3>'
+    + '<p>Los mejores canales para mantenerte al d\u00eda con inteligencia artificial, programaci\u00f3n y tecnolog\u00eda en espa\u00f1ol. '
+    + 'El inter\u00e9s por IA en espa\u00f1ol ha crecido un 63% respecto a 2024, y el consumo de contenido educativo sobre IA en YouTube subi\u00f3 48% interanual.</p></div>';
+
+  // Sort by subscribers (rough parse)
+  const sorted = [...CANALES].sort((a, b) => {
+    const parseK = s => { const m = s.match(/([\d.]+)(M|K)/); if (!m) return 0; return parseFloat(m[1]) * (m[2]==='M' ? 1000000 : 1000); };
+    return parseK(b.suscriptores) - parseK(a.suscriptores);
+  });
+
+  html += '<div class="cards-grid">';
+  sorted.forEach((ch, idx) => {
+    const tags = ch.tags.map(t => '<span class="tag">' + t + '</span>').join('');
+    html += '<div class="channel-card" data-text="' + (ch.nombre + ' ' + ch.creador + ' ' + ch.descripcion + ' ' + ch.tags.join(' ') + ' ' + ch.pais).toLowerCase() + '">'
+      + '<div class="ch-header">'
+      + '<div><span class="ch-name"><a href="' + ch.url + '" target="_blank" rel="noopener">' + ch.nombre + '</a></span>'
+      + (ch.creador ? '<div class="ch-creator">por ' + ch.creador + '</div>' : '') + '</div>'
+      + '<span class="ch-subs">&#9654; ' + ch.suscriptores + '</span>'
+      + '</div>'
+      + '<div class="ch-desc">' + ch.descripcion + '</div>'
+      + '<div class="ch-meta">'
+      + '<div class="ch-tags">' + tags + ' <span class="badge-nivel">' + ch.nivel + '</span> <span class="badge-pais">' + ch.pais + '</span></div>'
+      + '<a href="' + ch.url + '" target="_blank" rel="noopener" class="ch-visit-btn">&#9654; Ver canal</a>'
+      + '</div>'
+      + '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>

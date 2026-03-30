@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paneles de Compras | Moon Palace PTC</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1B3A5F;
+  --navy-deep: #0F2440;
+  --gold: #C8992A;
+  --gold-light: #E8C76A;
+  --blue: #2E6FAD;
+  --bg: #F2F4F8;
+  --white: #FFFFFF;
+  --text: #2D3748;
+  --text-light: #718096;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+.hero {
+  background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 50%, #264B73 100%);
+  padding: 48px 24px 56px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(200,153,42,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 80%, rgba(46,111,173,0.06) 0%, transparent 60%);
+}
+.hero-content { position:relative; z-index:1; max-width:600px; margin:0 auto; }
+.hero .bar { width:48px; height:4px; background:var(--gold); border-radius:2px; margin:0 auto 20px; }
+.hero h1 {
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:2.2rem; font-weight:700; color:#fff; margin-bottom:8px;
+  letter-spacing:-0.02em;
+}
+.hero .sub { font-size:1rem; color:var(--gold-light); font-weight:400; margin-bottom:6px; }
+.hero .desc { font-size:0.85rem; color:rgba(255,255,255,0.5); }
+
+.container { max-width:720px; margin:-32px auto 0; padding:0 20px 60px; position:relative; z-index:2; }
+
+.panel-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.25s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.panel-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(27,58,95,0.12);
+  border-color: var(--gold);
+}
+.panel-card:active { transform: translateY(-1px); }
+
+.card-icon {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+.card-info { flex:1; }
+.card-info h3 { font-family:'Cormorant Garamond',Georgia,serif; font-size:1.25rem; font-weight:600; color:var(--navy); margin-bottom:4px; }
+.card-info p { font-size:0.82rem; color:var(--text-light); line-height:1.4; }
+.card-arrow { font-size:1.3rem; color:var(--gold); opacity:0.4; transition:all .25s; flex-shrink:0; }
+.panel-card:hover .card-arrow { opacity:1; transform:translateX(4px); }
+
+.icon-compradores { background: linear-gradient(135deg, #1B3A5F 0%, #2E6FAD 100%); color:#fff; }
+.icon-entregas { background: linear-gradient(135deg, #22863a 0%, #2ECC71 100%); color:#fff; }
+.icon-pendientes { background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); color:#fff; }
+.icon-radar { background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); color:#fff; }
+.icon-ids { background: linear-gradient(135deg, #0891B2 0%, #22D3EE 100%); color:#fff; }
+.icon-ids-pub { background: linear-gradient(135deg, #059669 0%, #34D399 100%); color:#fff; }
+
+.footer {
+  text-align:center;
+  padding:20px;
+  font-size:0.75rem;
+  color:var(--text-light);
+}
+
+@media(max-width:560px) {
+  .hero { padding:36px 20px 44px; }
+  .hero h1 { font-size:1.7rem; }
+  .panel-card { padding:18px 20px; gap:14px; }
+  .card-icon { width:46px; height:46px; font-size:1.2rem; }
+  .card-info h3 { font-size:1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="bar"></div>
+    <h1>Paneles de Compras</h1>
+    <div class="sub">Moon Palace The Grand — Punta Cana</div>
+    <div class="desc">Acceso directo a todos los dashboards</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <a class="panel-card" href="compradores.html">
+    <div class="card-icon icon-compradores">&#9673;</div>
+    <div class="card-info">
+      <h3>Evaluacion de Compradores</h3>
+      <p>Ranking, KPIs individuales, hallazgos clave y tabla comparativa de 9 compradores</p>
+    </div>
+    <span class="card-arrow">&#8594;</span>
+  </a>
+
+  <a class="panel-card" href="entregas.html">
+    <div class="card-icon icon-entregas">&#10003;</div>
+    <div class="card-info">
+      <h3>Panel de Entregas</h3>
+      <p>Seguimiento de entregas por proveedor, cumplimiento y lineas vencidas</p>
+    </div>
+    <span class="card-arrow">&#8594;</span>
+  </a>
+
+  <a class="panel-card" href="pendientes.html">
+    <div class="card-icon icon-pendientes">&#9888;</div>
+    <div class="card-info">
+      <h3>OC Pendientes en Proceso</h3>
+      <p>Ordenes de compra abiertas, montos pendientes y seguimiento por comprador</p>
+    </div>
+    <span class="card-arrow">&#8594;</span>
+  </a>
+
+  <a class="panel-card" href="ids.html">
+    <div class="card-icon icon-ids">&#9881;</div>
+    <div class="card-info">
+      <h3>Dashboard IDs</h3>
+      <p>Seguimiento de IDs SAP por centro de consumo — version completa con asignaciones</p>
+    </div>
+    <span class="card-arrow">&#8594;</span>
+  </a>
+
+  <a class="panel-card" href="ids-publico.html">
+    <div class="card-icon icon-ids-pub">&#9881;</div>
+    <div class="card-info">
+      <h3>Dashboard IDs Publico</h3>
+      <p>Seguimiento de IDs SAP — version publica para compartir con chefs y operaciones</p>
+    </div>
+    <span class="card-arrow">&#8594;</span>
+  </a>
+
+  <a class="panel-card" href="radar.html">
+    <div class="card-icon icon-radar">&#9883;</div>
+    <div class="card-info">
+      <h3>Radar Tecnologico</h3>
+      <p>Noticias, tendencias y videos sobre tecnologia e inteligencia artificial</p>
+    </div>
+    <span class="card-arrow">&#8594;</span>
+  </a>
+
+</div>
+
+<div class="footer">
+  Departamento de Compras — Moon Palace The Grand PTC | Ing. Kelvin Baez
+</div>
+
+</body>
+</html>

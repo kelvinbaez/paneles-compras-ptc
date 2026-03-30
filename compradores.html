@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluacion de Compradores — Moon Palace PTC</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root { --navy: #1B3A5F; --gold: #C8992A; --blue: #2E6FAD; --bg: #F2F4F8; --green: #2ECC71; --red: #E74C3C; --orange: #F39C12; --gray: #95A5A6; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #333; }
+  .header { background: linear-gradient(135deg, var(--navy), #0d2240); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .header h1 { font-size: 1.5rem; } .header .subtitle { color: var(--gold); font-size: 0.9rem; }
+  .header .meta { font-size: 0.8rem; opacity: 0.8; text-align: right; }
+  .filtro-tag { display: inline-block; background: rgba(200,153,42,0.3); padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-top: 4px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .btn-print { background: var(--gold); color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+  .btn-print:hover { background: #b8891a; }
+
+  /* KPI Cards */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi-card { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid var(--navy); position: relative; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+  .kpi-card.active-filter { outline: 3px solid var(--gold); transform: translateY(-2px); }
+  .kpi-card .label { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi-card .value { font-size: 1.6rem; font-weight: 700; color: var(--navy); margin: 4px 0; }
+  .kpi-card .detail { font-size: 0.75rem; color: #666; }
+  .kpi-card.gold { border-left-color: var(--gold); } .kpi-card.blue { border-left-color: var(--blue); }
+  .kpi-card.green { border-left-color: var(--green); } .kpi-card.red { border-left-color: var(--red); }
+  .kpi-card .click-hint { font-size: 0.6rem; color: var(--blue); position: absolute; bottom: 4px; right: 8px; opacity: 0; transition: opacity 0.2s; }
+  .kpi-card:hover .click-hint { opacity: 1; }
+
+  /* Sections */
+  .section { background: white; border-radius: 10px; padding: 22px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .section h2 { color: var(--navy); font-size: 1.15rem; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .section h2 .filter-label { font-size: 0.75rem; font-weight: 400; color: var(--gold); background: #fff8e1; padding: 2px 10px; border-radius: 12px; }
+  .btn-clear { font-size: 0.7rem; background: #eee; border: none; padding: 3px 10px; border-radius: 10px; cursor: pointer; color: #666; }
+  .btn-clear:hover { background: #ddd; }
+
+  /* Tabla */
+  .table-controls { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+  .search-input { padding: 7px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 0.85rem; width: 220px; outline: none; }
+  .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(46,111,173,0.15); }
+  .table-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { background: var(--navy); color: white; padding: 9px 7px; text-align: center; white-space: nowrap; position: sticky; top: 0; cursor: pointer; user-select: none; z-index: 2; }
+  th:hover { background: var(--blue); }
+  th.sorted-asc::after { content: ' \u25B2'; font-size: 0.6rem; } th.sorted-desc::after { content: ' \u25BC'; font-size: 0.6rem; }
+  td { padding: 7px; border-bottom: 1px solid #eee; }
+  tr:hover { background: #f0f4ff; }
+  tr.row-highlight { background: #fff8e1; }
+  tr { cursor: pointer; }
+  .text-right { text-align: right; } .text-center { text-align: center; } .text-left { text-align: left; }
+
+  /* Badges */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; }
+  .bg { background: #d4edda; color: #155724; } .by { background: #fff3cd; color: #856404; }
+  .br { background: #f8d7da; color: #721c24; } .bb { background: #d1ecf1; color: #0c5460; }
+
+  /* Charts */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .chart-box { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .chart-box h3 { color: var(--navy); font-size: 0.95rem; margin-bottom: 8px; }
+
+  /* Comprador Cards */
+  .comprador-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 15px; }
+  .comp-card { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 3px solid var(--navy); transition: all 0.3s; cursor: pointer; }
+  .comp-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
+  .comp-card.expanded { grid-column: 1 / -1; border-top-color: var(--gold); }
+  .comp-card .name { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .comp-card .score-badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 12px; font-weight: 700; }
+  .comp-card .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .comp-card .metric { padding: 6px 8px; background: var(--bg); border-radius: 6px; }
+  .comp-card .metric .m-label { font-size: 0.68rem; color: var(--gray); }
+  .comp-card .metric .m-value { font-size: 0.9rem; font-weight: 600; color: var(--navy); }
+  .comp-card .provs { margin-top: 8px; }
+  .comp-card .provs span { display: inline-block; background: #e8edf3; padding: 2px 6px; border-radius: 4px; margin: 2px; font-size: 0.68rem; color: var(--navy); }
+  .comp-card .mini-bar { height: 6px; background: #e8e8e8; border-radius: 3px; overflow: hidden; margin-top: 3px; }
+  .comp-card .mini-bar .fill { height: 100%; border-radius: 3px; }
+  .comp-card .expanded-detail { display: none; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--gold); }
+  .comp-card.expanded .expanded-detail { display: block; }
+  .comp-card .expand-hint { font-size: 0.65rem; color: var(--blue); text-align: center; margin-top: 8px; opacity: 0.7; }
+  .comp-card.expanded .expand-hint { display: none; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  .detail-grid .detail-chart { min-height: 200px; }
+  .detail-section h4 { color: var(--navy); font-size: 0.9rem; margin-bottom: 8px; }
+  .prov-table { width: 100%; font-size: 0.78rem; }
+  .prov-table td { padding: 4px 6px; border-bottom: 1px solid #eee; }
+  .prov-table tr:hover { background: #f0f4ff; }
+
+  /* Ranking */
+  .rank-item { display: flex; align-items: center; gap: 15px; padding: 14px 12px; border-bottom: 1px solid #f0f0f0; transition: background 0.15s; cursor: pointer; border-radius: 6px; }
+  .rank-item:hover { background: #f0f4ff; }
+  .rank-item.selected { background: #fff8e1; border: 1px solid var(--gold); }
+  .rank-pos { font-size: 1.4rem; font-weight: 700; width: 40px; text-align: center; }
+  .rank-bar-wrap { height: 10px; background: #e8e8e8; border-radius: 5px; overflow: hidden; flex: 1; }
+  .rank-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+  .rank-details { display: grid; grid-template-columns: repeat(4, auto); gap: 12px; margin-top: 6px; }
+  .rank-detail { font-size: 0.73rem; color: #666; }
+  .rank-detail b { color: var(--navy); }
+
+  /* Resumen */
+  .resumen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  .hallazgo { padding: 12px; border-radius: 8px; font-size: 0.88rem; line-height: 1.5; }
+  .hallazgo.critical { background: #f8d7da; border-left: 4px solid var(--red); }
+  .hallazgo.warning { background: #fff3cd; border-left: 4px solid var(--orange); }
+  .hallazgo.good { background: #d4edda; border-left: 4px solid var(--green); }
+  .hallazgo.info { background: #d1ecf1; border-left: 4px solid var(--blue); }
+  .hallazgo strong { color: var(--navy); }
+
+  /* Modal / Overlay detail */
+  .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: flex-start; padding: 40px 20px; overflow-y: auto; }
+  .overlay.show { display: flex; }
+  .overlay-card { background: white; border-radius: 12px; max-width: 900px; width: 100%; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+  .overlay-close { position: absolute; top: 12px; right: 16px; font-size: 1.5rem; cursor: pointer; color: var(--gray); border: none; background: none; }
+  .overlay-close:hover { color: var(--red); }
+  .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--gold); }
+  .overlay-header h2 { color: var(--navy); font-size: 1.3rem; }
+  .overlay-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .overlay-metric { padding: 10px; background: var(--bg); border-radius: 8px; text-align: center; }
+  .overlay-metric .om-label { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; }
+  .overlay-metric .om-value { font-size: 1.3rem; font-weight: 700; color: var(--navy); }
+  .overlay-metric .om-vs { font-size: 0.65rem; margin-top: 2px; }
+  .overlay-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .overlay-chart-box { padding: 15px; border: 1px solid #eee; border-radius: 8px; }
+  .overlay-chart-box h4 { color: var(--navy); font-size: 0.85rem; margin-bottom: 8px; }
+  .overlay-provs { margin-top: 15px; }
+  .overlay-provs h4 { color: var(--navy); font-size: 0.9rem; margin-bottom: 8px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 18px; flex-wrap: wrap; }
+  .tab { padding: 8px 16px; border: none; background: white; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 0.83rem; transition: all 0.2s; color: #666; border-bottom: 2px solid transparent; }
+  .tab.active { background: white; color: var(--navy); font-weight: 600; border-bottom: 2px solid var(--gold); }
+  .tab:hover:not(.active) { color: var(--navy); background: #f0f0f0; }
+  .tab-content { display: none; } .tab-content.active { display: block; }
+
+  @media (max-width: 768px) {
+    .charts-grid, .overlay-charts, .detail-grid { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .comprador-cards { grid-template-columns: 1fr; }
+    .resumen-grid { grid-template-columns: 1fr; }
+    .rank-details { grid-template-columns: repeat(2, auto); }
+    .overlay-card { padding: 20px; }
+  }
+  @media print {
+    .tabs, .overlay, .btn-print, .click-hint, .expand-hint { display: none !important; }
+    .tab-content { display: block !important; page-break-inside: avoid; }
+    body { background: white; }
+    .section { box-shadow: none; border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Evaluacion de Compradores</h1>
+    <div class="subtitle">Moon Palace The Grand — Punta Cana</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:15px;">
+    <button class="btn-print" onclick="window.print()">Imprimir / PDF</button>
+    <div class="meta">
+      Generado: <span id="fecha-gen"></span><br>
+      <span class="filtro-tag">Sol. Concluidas + OC Liberadas | Excluye posiciones Borradas/Bloqueadas</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="kpi-row" id="kpi-row"></div>
+  <div class="tabs" id="tabs-bar">
+    <button class="tab active" data-tab="resumen">Resumen Ejecutivo</button>
+    <button class="tab" data-tab="ranking">Ranking</button>
+    <button class="tab" data-tab="detalle">Detalle por Comprador</button>
+    <button class="tab" data-tab="graficos">Graficos</button>
+    <button class="tab" data-tab="tabla">Tabla Comparativa</button>
+  </div>
+
+  <div class="tab-content active" id="tab-resumen">
+    <div class="section"><h2>Hallazgos Clave</h2><div class="resumen-grid" id="hallazgos"></div></div>
+    <div class="section"><h2>Recomendaciones</h2><div id="recomendaciones"></div></div>
+  </div>
+  <div class="tab-content" id="tab-ranking">
+    <div class="section">
+      <h2>Ranking por Desempeno <span style="font-size:0.7rem;font-weight:400;color:#888;">Click en un comprador para ver detalle</span></h2>
+      <div id="ranking-list"></div>
+    </div>
+  </div>
+  <div class="tab-content" id="tab-detalle">
+    <div id="detalle-filter-info" style="display:none;margin-bottom:12px;padding:10px 15px;background:#fff8e1;border-radius:8px;font-size:0.85rem;display:flex;justify-content:space-between;align-items:center;">
+      <span id="detalle-filter-text"></span>
+      <button class="btn-clear" onclick="clearKpiFilter()">Quitar filtro</button>
+    </div>
+    <div class="comprador-cards" id="comprador-cards"></div>
+  </div>
+  <div class="tab-content" id="tab-graficos">
+    <div class="charts-grid" id="charts-container">
+      <div class="chart-box"><h3>Valor Pedidos vs Valor OC</h3><canvas id="chart-valor"></canvas></div>
+      <div class="chart-box"><h3>Conversion: Solicitud a Pedido Liberado</h3><canvas id="chart-conversion"></canvas></div>
+      <div class="chart-box"><h3>Cumplimiento de Entregas (404)</h3><canvas id="chart-cumplimiento"></canvas></div>
+      <div class="chart-box"><h3>Facturacion Completada</h3><canvas id="chart-facturacion"></canvas></div>
+      <div class="chart-box"><h3>Lineas Vencidas sin Entrega</h3><canvas id="chart-vencidas"></canvas></div>
+      <div class="chart-box"><h3>Distribucion de Valor por Comprador</h3><canvas id="chart-pie"></canvas></div>
+    </div>
+  </div>
+  <div class="tab-content" id="tab-tabla">
+    <div class="section">
+      <h2>Tabla Comparativa</h2>
+      <div class="table-controls">
+        <input type="text" class="search-input" id="search-tabla" placeholder="Buscar comprador...">
+        <span style="font-size:0.75rem;color:#888;" id="row-count"></span>
+      </div>
+      <div class="table-wrapper">
+        <table><thead><tr id="t-head"></tr></thead><tbody id="t-body"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY DETALLE COMPRADOR -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeOverlay()">
+  <div class="overlay-card">
+    <button class="overlay-close" onclick="closeOverlay()">&times;</button>
+    <div class="overlay-header">
+      <h2 id="ov-name"></h2>
+      <span id="ov-score" class="badge" style="font-size:1rem;padding:5px 15px;"></span>
+    </div>
+    <div class="overlay-metrics" id="ov-metrics"></div>
+    <div class="overlay-charts">
+      <div class="overlay-chart-box"><h4>Metricas vs Promedio del Equipo</h4><canvas id="ov-chart-radar"></canvas></div>
+      <div class="overlay-chart-box"><h4>Desglose de Puntaje</h4><canvas id="ov-chart-score"></canvas></div>
+    </div>
+    <div class="overlay-provs" id="ov-provs"></div>
+  </div>
+</div>
+
+<script>
+const D = {
+  "Antonio Perez": {"d7": {}, "d4": {"oc": 17, "lin": 24, "val": 537467, "cumpl": 54.2, "pend": 11, "venc": 11, "dias": 0.6, "fact": 95.8, "prov": 6}},
+  "Carmen Victorino": {"d7": {"lsol": 211, "lped": 200, "pu": 84, "conv": 94.8, "val": 2912521, "dias": 1.7, "ent": 89.8, "prov": 23, "top": {"WURTH DOMINICANA SA": 32, "BETANZAM CHEMICALS SRL": 31, "INSIGNIA SRL": 19, "RODAMIENTOS Y SERV. IND.": 19, "NILFISK DE MEXICO": 18}}, "d4": {"oc": 85, "lin": 199, "val": 3007099, "cumpl": 78.4, "pend": 44, "venc": 11, "dias": 6.2, "fact": 68.3, "prov": 21}},
+  "Elsa Jimenez": {"d7": {"lsol": 426, "lped": 398, "pu": 48, "conv": 93.4, "val": 319325, "dias": 1.2, "ent": 13.0, "prov": 16, "top": {"SOLULOGIS FOOD SERVICES SRL": 13, "ALMACENES CARBALLO SRL": 10, "JE MERCANTIL FERRETERA SRL": 6, "ALVAREZ DOMINICANA SRL": 5, "DEPOSITO FERRETERO SRL": 4}}, "d4": {"oc": 30, "lin": 100, "val": 525057, "cumpl": 72.0, "pend": 29, "venc": 5, "dias": 2.3, "fact": 72.0, "prov": 21}},
+  "Gregoris Castro": {"d7": {"lsol": 20, "lped": 18, "pu": 10, "conv": 90.0, "val": 217054, "dias": 1.3, "ent": 99.6, "prov": 8, "top": {"BETANZAM CHEMICALS SRL": 9, "JAIMAN CHOCOLATE SERVICES SRL": 2, "SIRPRO NETWORK PRO SOLUTIONS SRL": 2}}, "d4": {"oc": 10, "lin": 67, "val": 806624, "cumpl": 97.0, "pend": 2, "venc": 0, "dias": 14.8, "fact": 97.0, "prov": 8}},
+  "Isanel Cipion": {"d7": {"lsol": 86, "lped": 67, "pu": 50, "conv": 77.9, "val": 213011, "dias": 0.8, "ent": 85.7, "prov": 10, "top": {"PLANETA AZUL SA": 31, "ALMACENES IBERIA SRL": 9, "PYP TROPICAL MIX SRL": 9, "ALIMUNDO SRL": 4, "GRUPO ALASKA SA": 4}}, "d4": {"oc": 30, "lin": 167, "val": 217772, "cumpl": 26.9, "pend": 123, "venc": 123, "dias": 2.2, "fact": 21.0, "prov": 13}},
+  "Jenny Montilla": {"d7": {"lsol": 49, "lped": 43, "pu": 25, "conv": 87.8, "val": 301234, "dias": 1.2, "ent": 44.0, "prov": 12, "top": {"COMERCIAL N AND K SRL": 9, "REPRESENTACIONES PLAZA SRL": 8, "NUTS TRADING DOMINICANA SA": 4, "PROD. LIMPIEZA NUNEZ CHECO": 4, "SUMINISTROS EXPRESO HOTELERO SRL": 4}}, "d4": {"oc": 50, "lin": 103, "val": 971969, "cumpl": 79.6, "pend": 22, "venc": 6, "dias": 3.7, "fact": 25.2, "prov": 13}},
+  "Maria Lantigua": {"d7": {"lsol": 349, "lped": 226, "pu": 146, "conv": 64.8, "val": 5049509, "dias": 1.9, "ent": 64.5, "prov": 21, "top": {"LIBOMI ENTERPRISE SRL": 62, "MESIAS CARNES EMBUTIDOS SRL": 46, "ABS FOODS GROUP SRL": 22, "SIGMA ALIMENTOS DOMINICANA SA": 22, "COAVE SRL": 15}}, "d4": {"oc": 115, "lin": 210, "val": 5275564, "cumpl": 67.1, "pend": 126, "venc": 103, "dias": 4.2, "fact": 26.7, "prov": 16}},
+  "Ramon Chaljub": {"d7": {"lsol": 1272, "lped": 1069, "pu": 215, "conv": 84.0, "val": 4332228, "dias": 1.2, "ent": 78.2, "prov": 28, "top": {"FERGREENS SRL": 355, "INVERSIONES SOLFRESH SRL": 247, "LANCO LANGOSTINOS Y CONGELADOS SRL": 186, "CATTLEYA EDEN FOODS SRL": 62, "SUMINISTROS EXPRESO HOTELERO SRL": 41}}, "d4": {"oc": 192, "lin": 1010, "val": 3612771, "cumpl": 82.7, "pend": 324, "venc": 245, "dias": 6.3, "fact": 65.6, "prov": 22}},
+  "Ricardo Lugo": {"d7": {"lsol": 540, "lped": 446, "pu": 289, "conv": 82.6, "val": 3069273, "dias": 1.3, "ent": 84.4, "prov": 38, "top": {"ALIMUNDO SRL": 50, "PIBI SRL": 48, "ALVAREZ Y SANCHEZ SA": 26, "PADADERIA Y PRODUCTOS MARIA": 26, "CESAR A. GONZALEZ JIMENEZ": 20}}, "d4": {"oc": 257, "lin": 416, "val": 2266899, "cumpl": 82.2, "pend": 84, "venc": 34, "dias": 4.6, "fact": 75.0, "prov": 39}}
+};
+
+// === HELPERS ===
+const $ = id => document.getElementById(id);
+const fmt = n => (n!=null && n>0) ? '$'+n.toLocaleString('en-US',{maximumFractionDigits:0}) : 'N/D';
+const pc = n => n!=null ? n.toFixed(1)+'%' : 'N/D';
+const nm = n => n!=null ? n.toLocaleString() : '0';
+function bdg(v,g,w){ if(v==null) return '<span class="badge bb">N/D</span>'; return '<span class="badge '+(v>=g?'bg':v>=w?'by':'br')+'">'+pc(v)+'</span>'; }
+function miniBar(v,mx,c){ var p=mx>0?(v/mx*100):0; return '<div class="mini-bar"><div class="fill" style="width:'+p+'%;background:'+c+';"></div></div>'; }
+function vsColor(v){ return v>=0 ? 'var(--green)' : 'var(--red)'; }
+function vsArrow(v){ return v>=0 ? '&#9650;' : '&#9660;'; }
+
+// === COMPUTE ===
+var activos = Object.entries(D).filter(function(e){ return (e[1].d7.lsol||0)>=20 || (e[1].d4.lin||0)>=20; });
+var maxVal7 = Math.max.apply(null, activos.map(function(e){ return e[1].d7.val||0; }));
+
+function score(d){
+  var conv=d.d7.conv||0, cumpl=d.d4.cumpl||0, fact=d.d4.fact||0;
+  var vel=d.d7.dias!=null?Math.max(0,100-d.d7.dias*10):50;
+  var vol=maxVal7>0?((d.d7.val||0)/maxVal7*100):0;
+  return {total: conv*0.30+cumpl*0.25+fact*0.20+vel*0.15+vol*0.10, conv:conv*0.30, cumpl:cumpl*0.25, fact:fact*0.20, vel:vel*0.15, vol:vol*0.10};
+}
+
+var ranked = activos.map(function(e){ var s=score(e[1]); return {n:e[0], s:s.total, sc:s, d:e[1]}; }).sort(function(a,b){ return b.s-a.s; });
+var maxS = ranked[0]?ranked[0].s:1;
+
+var avg = {conv:0, cumpl:0, fact:0, dias:0};
+var cConv=0, cCumpl=0, cFact=0, cDias=0;
+ranked.forEach(function(r){
+  if(r.d.d7.conv>0){avg.conv+=r.d.d7.conv;cConv++;}
+  if(r.d.d4.cumpl>0){avg.cumpl+=r.d.d4.cumpl;cCumpl++;}
+  if(r.d.d4.fact>0){avg.fact+=r.d.d4.fact;cFact++;}
+  if(r.d.d7.dias!=null){avg.dias+=r.d.d7.dias;cDias++;}
+});
+avg.conv/=cConv||1; avg.cumpl/=cCumpl||1; avg.fact/=cFact||1; avg.dias/=cDias||1;
+
+var totVal7=0,totVal4=0,totVenc=0,totPend=0,totLin=0;
+activos.forEach(function(e){ totVal7+=(e[1].d7.val||0); totVal4+=(e[1].d4.val||0); totVenc+=(e[1].d4.venc||0); totPend+=(e[1].d4.pend||0); totLin+=(e[1].d4.lin||0); });
+
+// === DATE ===
+$('fecha-gen').textContent = new Date().toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+// === KPI CARDS (clickable) ===
+var kpiFilter = null;
+var kpiDefs = [
+  {id:'kpi-all', cls:'', label:'Compradores', value:activos.length, detail:'Click para ver todos', filter:'all'},
+  {id:'kpi-val', cls:'gold', label:'Valor Pedidos (007)', value:fmt(totVal7), detail:'Pedidos liberados', filter:'top-valor'},
+  {id:'kpi-oc', cls:'blue', label:'Valor OC (404)', value:fmt(totVal4), detail:'OC liberadas', filter:'top-oc'},
+  {id:'kpi-conv', cls:'green', label:'Conversion Prom.', value:avg.conv.toFixed(1)+'%', detail:'Click: ver baja conversion', filter:'baja-conversion'},
+  {id:'kpi-cumpl', cls:'', label:'Cumplimiento Prom.', value:avg.cumpl.toFixed(1)+'%', detail:'Click: ver bajo cumplimiento', filter:'bajo-cumplimiento'},
+  {id:'kpi-venc', cls:'red', label:'Lineas Vencidas', value:totVenc, detail:totPend+' pendientes totales', filter:'vencidas'}
+];
+
+$('kpi-row').innerHTML = kpiDefs.map(function(k){
+  return '<div class="kpi-card '+k.cls+'" id="'+k.id+'" onclick="applyKpiFilter(\''+k.filter+'\')">'
+    +'<div class="label">'+k.label+'</div>'
+    +'<div class="value">'+k.value+'</div>'
+    +'<div class="detail">'+k.detail+'</div>'
+    +'<div class="click-hint">Click para filtrar</div>'
+    +'</div>';
+}).join('');
+
+function applyKpiFilter(filter){
+  // Toggle
+  if(kpiFilter === filter) { clearKpiFilter(); return; }
+  kpiFilter = filter;
+  // Highlight active KPI
+  document.querySelectorAll('.kpi-card').forEach(function(c){ c.classList.remove('active-filter'); });
+  var kpiEl = kpiDefs.find(function(k){ return k.filter===filter; });
+  if(kpiEl) $(kpiEl.id).classList.add('active-filter');
+  // Switch to detalle tab
+  switchTab('detalle');
+  renderCards();
+}
+
+function clearKpiFilter(){
+  kpiFilter = null;
+  document.querySelectorAll('.kpi-card').forEach(function(c){ c.classList.remove('active-filter'); });
+  $('detalle-filter-info').style.display = 'none';
+  renderCards();
+}
+
+function getFilteredRanked(){
+  if(!kpiFilter || kpiFilter==='all') return ranked;
+  if(kpiFilter==='top-valor') return ranked.slice().sort(function(a,b){ return (b.d.d7.val||0)-(a.d.d7.val||0); });
+  if(kpiFilter==='top-oc') return ranked.slice().sort(function(a,b){ return (b.d.d4.val||0)-(a.d.d4.val||0); });
+  if(kpiFilter==='baja-conversion') return ranked.filter(function(r){ return (r.d.d7.conv||0)<60 && (r.d.d7.lsol||0)>0; }).sort(function(a,b){ return (a.d.d7.conv||0)-(b.d.d7.conv||0); });
+  if(kpiFilter==='bajo-cumplimiento') return ranked.filter(function(r){ return (r.d.d4.cumpl||0)<75; }).sort(function(a,b){ return (a.d.d4.cumpl||0)-(b.d.d4.cumpl||0); });
+  if(kpiFilter==='vencidas') return ranked.filter(function(r){ return (r.d.d4.venc||0)>0; }).sort(function(a,b){ return (b.d.d4.venc||0)-(a.d.d4.venc||0); });
+  return ranked;
+}
+
+var filterLabels = {
+  'all': 'Todos los compradores',
+  'top-valor': 'Ordenados por mayor valor de pedidos',
+  'top-oc': 'Ordenados por mayor valor de OC',
+  'baja-conversion': 'Compradores con conversion menor a 60%',
+  'bajo-cumplimiento': 'Compradores con cumplimiento menor a 75%',
+  'vencidas': 'Compradores con lineas vencidas (ordenados por cantidad)'
+};
+
+// === RENDER CARDS ===
+function renderCards(){
+  var list = getFilteredRanked();
+  var filterInfo = $('detalle-filter-info');
+  if(kpiFilter && kpiFilter !== 'all'){
+    filterInfo.style.display = 'flex';
+    $('detalle-filter-text').innerHTML = '<strong>Filtro activo:</strong> ' + (filterLabels[kpiFilter]||'') + ' (' + list.length + ' resultados)';
+  } else {
+    filterInfo.style.display = 'none';
+  }
+
+  $('comprador-cards').innerHTML = list.map(function(r){
+    var d7=r.d.d7||{}, d4=r.d.d4||{};
+    var topP = Object.entries(d7.top||{}).map(function(e){ return '<span>'+e[0]+' ('+e[1]+')</span>'; }).join('');
+    var scCls = r.s>=60?'bg':r.s>=40?'by':'br';
+    var vsProm = (d7.conv||0) >= avg.conv;
+    return '<div class="comp-card" onclick="openOverlay(\''+r.n.replace(/'/g,"\\'")+'\')">'
+      +'<div class="name">'+r.n+' <span class="score-badge badge '+scCls+'">'+r.s.toFixed(1)+' pts</span></div>'
+      +'<div class="metrics">'
+        +'<div class="metric"><div class="m-label">Sol. Concluidas</div><div class="m-value">'+nm(d7.lsol)+'</div></div>'
+        +'<div class="metric"><div class="m-label">Ped. Liberados</div><div class="m-value">'+nm(d7.lped)+'</div></div>'
+        +'<div class="metric"><div class="m-label">Conversion</div><div class="m-value">'+bdg(d7.conv,75,50)+' <span style="font-size:0.65rem;color:'+vsColor((d7.conv||0)-avg.conv)+'">'+vsArrow((d7.conv||0)-avg.conv)+' vs prom</span></div></div>'
+        +'<div class="metric"><div class="m-label">Valor Pedidos</div><div class="m-value">'+fmt(d7.val)+'</div>'+miniBar(d7.val||0,maxVal7,'var(--navy)')+'</div>'
+        +'<div class="metric"><div class="m-label">Cumplimiento</div><div class="m-value">'+bdg(d4.cumpl,75,50)+'</div>'+miniBar(d4.cumpl||0,100,(d4.cumpl||0)>=75?'var(--green)':(d4.cumpl||0)>=50?'var(--orange)':'var(--red)')+'</div>'
+        +'<div class="metric"><div class="m-label">Facturacion</div><div class="m-value">'+bdg(d4.fact,70,40)+'</div></div>'
+        +'<div class="metric"><div class="m-label">Valor OC</div><div class="m-value">'+fmt(d4.val)+'</div></div>'
+        +'<div class="metric"><div class="m-label">Vencidas</div><div class="m-value" style="color:'+((d4.venc||0)>20?'var(--red)':'inherit')+'">'+nm(d4.venc)+'</div></div>'
+      +'</div>'
+      +'<div class="expand-hint">Click para ver detalle completo</div>'
+    +'</div>';
+  }).join('');
+}
+renderCards();
+
+// === OVERLAY DETAIL ===
+var ovChartRadar = null, ovChartScore = null;
+
+function openOverlay(name){
+  var r = ranked.find(function(x){ return x.n === name; });
+  if(!r) return;
+  var d7 = r.d.d7 || {}, d4 = r.d.d4 || {};
+  var scCls = r.s>=60?'bg':r.s>=40?'by':'br';
+
+  $('ov-name').textContent = r.n;
+  $('ov-score').className = 'badge '+scCls;
+  $('ov-score').textContent = r.s.toFixed(1)+' puntos';
+  $('ov-score').style.fontSize = '1rem';
+  $('ov-score').style.padding = '5px 15px';
+
+  // Metrics
+  var vsConv = (d7.conv||0)-avg.conv;
+  var vsCumpl = (d4.cumpl||0)-avg.cumpl;
+  var vsFact = (d4.fact||0)-avg.fact;
+  var mets = [
+    {l:'Sol. Concluidas', v:nm(d7.lsol), vs:''},
+    {l:'Ped. Liberados', v:nm(d7.lped), vs:''},
+    {l:'Conversion', v:pc(d7.conv), vs:'<span style="color:'+vsColor(vsConv)+'">'+(vsConv>=0?'+':'')+vsConv.toFixed(1)+' vs prom</span>'},
+    {l:'Valor Pedidos', v:fmt(d7.val), vs:''},
+    {l:'Tiempo Sol-Ped', v:(d7.dias!=null?d7.dias+' dias':'N/D'), vs:''},
+    {l:'OC Liberadas', v:nm(d4.oc)+' ('+nm(d4.lin)+' lin)', vs:''},
+    {l:'Valor OC', v:fmt(d4.val), vs:''},
+    {l:'Cumplimiento', v:pc(d4.cumpl), vs:'<span style="color:'+vsColor(vsCumpl)+'">'+(vsCumpl>=0?'+':'')+vsCumpl.toFixed(1)+' vs prom</span>'},
+    {l:'Facturacion', v:pc(d4.fact), vs:'<span style="color:'+vsColor(vsFact)+'">'+(vsFact>=0?'+':'')+vsFact.toFixed(1)+' vs prom</span>'},
+    {l:'Lineas Vencidas', v:nm(d4.venc), vs:(d4.venc||0)>0?'<span style="color:var(--red)">de '+nm(d4.pend)+' pendientes</span>':''},
+    {l:'Proveedores', v:nm((d7.prov||0)+(d4.prov||0)), vs:''},
+    {l:'Pedidos Unicos', v:nm(d7.pu), vs:''}
+  ];
+  $('ov-metrics').innerHTML = mets.map(function(m){
+    return '<div class="overlay-metric"><div class="om-label">'+m.l+'</div><div class="om-value">'+m.v+'</div>'+(m.vs?'<div class="om-vs">'+m.vs+'</div>':'')+'</div>';
+  }).join('');
+
+  // Proveedores
+  var topEntries = Object.entries(d7.top||{});
+  if(topEntries.length > 0){
+    var maxProv = topEntries[0][1];
+    $('ov-provs').innerHTML = '<h4>Top Proveedores</h4><table class="prov-table">'
+      +topEntries.map(function(e){
+        var pct = (e[1]/maxProv*100).toFixed(0);
+        return '<tr><td style="width:45%"><strong>'+e[0]+'</strong></td><td style="width:15%" class="text-center">'+e[1]+' lin</td><td style="width:40%">'+miniBar(e[1],maxProv,'var(--blue)')+'</td></tr>';
+      }).join('')
+      +'</table>';
+  } else {
+    $('ov-provs').innerHTML = '<h4>Top Proveedores</h4><p style="color:var(--gray);font-size:0.85rem;">Sin datos de proveedores en ZPMM007</p>';
+  }
+
+  // Radar chart
+  if(ovChartRadar) ovChartRadar.destroy();
+  ovChartRadar = new Chart($('ov-chart-radar'), {
+    type: 'radar',
+    data: {
+      labels: ['Conversion', 'Cumplimiento', 'Facturacion', 'Velocidad', 'Volumen'],
+      datasets: [
+        {label: r.n, data: [d7.conv||0, d4.cumpl||0, d4.fact||0, d7.dias!=null?Math.max(0,100-d7.dias*10):50, maxVal7>0?((d7.val||0)/maxVal7*100):0], backgroundColor:'rgba(27,58,95,0.2)', borderColor:'#1B3A5F', pointBackgroundColor:'#1B3A5F'},
+        {label: 'Promedio equipo', data: [avg.conv, avg.cumpl, avg.fact, Math.max(0,100-avg.dias*10), 50], backgroundColor:'rgba(200,153,42,0.1)', borderColor:'#C8992A', borderDash:[5,5], pointBackgroundColor:'#C8992A'}
+      ]
+    },
+    options: {responsive:true, scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{size:9}}}}, plugins:{legend:{position:'bottom',labels:{font:{size:10}}}}}
+  });
+
+  // Score breakdown
+  if(ovChartScore) ovChartScore.destroy();
+  ovChartScore = new Chart($('ov-chart-score'), {
+    type: 'bar',
+    data: {
+      labels: ['Conversion (30%)', 'Cumplimiento (25%)', 'Facturacion (20%)', 'Velocidad (15%)', 'Volumen (10%)'],
+      datasets: [{data: [r.sc.conv, r.sc.cumpl, r.sc.fact, r.sc.vel, r.sc.vol], backgroundColor:['#1B3A5F','#2E6FAD','#C8992A','#2ECC71','#F39C12']}]
+    },
+    options: {indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{x:{max:Math.ceil(maxS/10)*10}}}
+  });
+
+  $('overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay(){
+  $('overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeOverlay(); });
+
+// === RESUMEN ===
+var hallazgos = [];
+var best = ranked[0], worst = ranked[ranked.length-1];
+hallazgos.push({t:'info',m:'<strong>'+best.n+'</strong> lidera el ranking con '+best.s.toFixed(1)+' pts. Mejor combinacion de conversion ('+pc(best.d.d7.conv)+') y cumplimiento ('+pc(best.d.d4.cumpl)+').'});
+var topValor = ranked.slice().sort(function(a,b){ return (b.d.d7.val||0)-(a.d.d7.val||0); })[0];
+hallazgos.push({t:'info',m:'<strong>'+topValor.n+'</strong> gestiona el mayor volumen: '+fmt(topValor.d.d7.val)+' en pedidos ('+((topValor.d.d7.val||0)/totVal7*100).toFixed(0)+'% del total).'});
+ranked.forEach(function(r){
+  if((r.d.d4.venc||0)>50) hallazgos.push({t:'critical',m:'<strong>'+r.n+'</strong> tiene <strong>'+r.d.d4.venc+' lineas vencidas</strong> sin entrega. Requiere seguimiento urgente.'});
+  if((r.d.d4.cumpl||0)<30&&(r.d.d4.lin||0)>50) hallazgos.push({t:'critical',m:'<strong>'+r.n+'</strong> solo tiene '+pc(r.d.d4.cumpl)+' de cumplimiento en entregas ('+r.d.d4.lin+' lineas).'});
+  if((r.d.d7.conv||0)<50&&(r.d.d7.lsol||0)>50) hallazgos.push({t:'warning',m:'<strong>'+r.n+'</strong> convierte solo '+pc(r.d.d7.conv)+' de solicitudes. De '+r.d.d7.lsol+' concluidas, solo '+r.d.d7.lped+' con pedido liberado.'});
+  if((r.d.d4.fact||0)<30&&(r.d.d4.lin||0)>50) hallazgos.push({t:'warning',m:'<strong>'+r.n+'</strong> tiene '+pc(r.d.d4.fact)+' de facturacion. Posible retraso en verificacion.'});
+  if((r.d.d7.conv||0)>80&&(r.d.d4.cumpl||0)>75) hallazgos.push({t:'good',m:'<strong>'+r.n+'</strong> buen desempeno: '+pc(r.d.d7.conv)+' conversion y '+pc(r.d.d4.cumpl)+' cumplimiento.'});
+});
+hallazgos.sort(function(a,b){ var o={critical:0,warning:1,info:2,good:3}; return o[a.t]-o[b.t]; });
+$('hallazgos').innerHTML = hallazgos.map(function(h){ return '<div class="hallazgo '+h.t+'">'+h.m+'</div>'; }).join('');
+
+var recs = [];
+if(totVenc>100) recs.push('Revisar las <strong>'+totVenc+' lineas vencidas</strong> sin entrega. Priorizar OC con mayor antiguedad y valor.');
+ranked.forEach(function(r){
+  if((r.d.d7.conv||0)<50&&(r.d.d7.lsol||0)>50) recs.push('Investigar por que '+r.n+' tiene '+(r.d.d7.lsol-r.d.d7.lped)+' solicitudes sin pedido liberado.');
+  if((r.d.d4.fact||0)<30&&(r.d.d4.val||0)>200000) recs.push('Acelerar facturas de '+r.n+' ('+fmt(r.d.d4.val)+' en OC, solo '+pc(r.d.d4.fact)+' facturado).');
+});
+if(avg.cumpl<75) recs.push('Cumplimiento promedio ('+avg.cumpl.toFixed(1)+'%) por debajo de 75%. Revisar seguimiento de entregas.');
+$('recomendaciones').innerHTML = recs.map(function(r,i){ return '<div style="padding:10px 12px;margin:6px 0;background:var(--bg);border-radius:6px;font-size:0.88rem;"><strong style="color:var(--gold);">'+(i+1)+'.</strong> '+r+'</div>'; }).join('');
+
+// === RANKING ===
+$('ranking-list').innerHTML = ranked.map(function(r,i){
+  var d7=r.d.d7||{}, d4=r.d.d4||{};
+  var bp=(r.s/maxS*100).toFixed(0);
+  var cl=r.s>=60?'var(--green)':r.s>=40?'var(--orange)':'var(--red)';
+  var vsConv=((d7.conv||0)-avg.conv);
+  var vsCumpl=((d4.cumpl||0)-avg.cumpl);
+  return '<div class="rank-item" onclick="openOverlay(\''+r.n.replace(/'/g,"\\'")+'\')">'
+    +'<div class="rank-pos" style="color:'+cl+'">#'+(i+1)+'</div>'
+    +'<div style="flex:1;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+        +'<span style="font-weight:600;color:var(--navy);font-size:0.95rem;">'+r.n+'</span>'
+        +'<span style="font-weight:700;color:'+cl+';font-size:1.1rem;">'+r.s.toFixed(1)+'</span>'
+      +'</div>'
+      +'<div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:'+bp+'%;background:'+cl+';"></div></div>'
+      +'<div class="rank-details">'
+        +'<div class="rank-detail">Conv: <b>'+pc(d7.conv)+'</b> <span style="color:'+vsColor(vsConv)+';font-size:0.65rem;">'+(vsConv>=0?'+':'')+vsConv.toFixed(1)+'</span></div>'
+        +'<div class="rank-detail">Cumpl: <b>'+pc(d4.cumpl)+'</b> <span style="color:'+vsColor(vsCumpl)+';font-size:0.65rem;">'+(vsCumpl>=0?'+':'')+vsCumpl.toFixed(1)+'</span></div>'
+        +'<div class="rank-detail">Fact: <b>'+pc(d4.fact)+'</b></div>'
+        +'<div class="rank-detail">Valor: <b>'+fmt(d7.val||0)+'</b></div>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
+}).join('');
+
+// === TABLA ===
+var cols=['Comprador','Puntaje','Sol.','Ped.','Conv %','Valor 007','Dias','OC','Valor 404','Cumpl %','Fact %','Venc.','Prov.'];
+$('t-head').innerHTML = cols.map(function(c,i){ return '<th data-i="'+i+'">'+c+'</th>'; }).join('');
+var sC=1, sA=false, searchTerm='';
+
+function rT(){
+  var rows = ranked.map(function(r){
+    var d7=r.d.d7||{}, d4=r.d.d4||{};
+    return [r.n, r.s, d7.lsol||0, d7.lped||0, d7.conv||0, d7.val||0, d7.dias!=null?d7.dias:'-', d4.oc||0, d4.val||0, d4.cumpl||0, d4.fact||0, d4.venc||0, (d7.prov||0)+(d4.prov||0)];
+  });
+  if(searchTerm) rows=rows.filter(function(r){ return r[0].toLowerCase().indexOf(searchTerm)>=0; });
+  rows.sort(function(a,b){ var va=a[sC],vb=b[sC]; if(typeof va==='string') return sA?va.localeCompare(vb):vb.localeCompare(va); va=parseFloat(va)||0;vb=parseFloat(vb)||0; return sA?va-vb:vb-va; });
+  $('t-body').innerHTML = rows.map(function(r){
+    return '<tr onclick="openOverlay(\''+r[0].replace(/'/g,"\\'")+'\')">'
+      +'<td class="text-left"><strong>'+r[0]+'</strong></td>'
+      +'<td class="text-center"><strong>'+(typeof r[1]==='number'?r[1].toFixed(1):r[1])+'</strong></td>'
+      +'<td class="text-right">'+nm(r[2])+'</td>'
+      +'<td class="text-right">'+nm(r[3])+'</td>'
+      +'<td class="text-center">'+bdg(r[4],75,50)+'</td>'
+      +'<td class="text-right">'+fmt(r[5])+'</td>'
+      +'<td class="text-center">'+r[6]+'</td>'
+      +'<td class="text-right">'+nm(r[7])+'</td>'
+      +'<td class="text-right">'+fmt(r[8])+'</td>'
+      +'<td class="text-center">'+bdg(r[9],75,50)+'</td>'
+      +'<td class="text-center">'+bdg(r[10],70,40)+'</td>'
+      +'<td class="text-center" style="color:'+((r[11]>20)?'var(--red)':'inherit')+';font-weight:'+((r[11]>20)?'700':'400')+'">'+r[11]+'</td>'
+      +'<td class="text-center">'+r[12]+'</td>'
+    +'</tr>';
+  }).join('');
+  $('row-count').textContent = rows.length+' compradores';
+  document.querySelectorAll('#t-head th').forEach(function(th){ th.classList.remove('sorted-asc','sorted-desc'); });
+  var th=document.querySelector('#t-head th[data-i="'+sC+'"]');
+  if(th) th.classList.add(sA?'sorted-asc':'sorted-desc');
+}
+document.querySelectorAll('#t-head th').forEach(function(th){
+  th.onclick=function(){ var i=+th.dataset.i; if(sC===i)sA=!sA;else{sC=i;sA=false;} rT(); };
+});
+$('search-tabla').oninput=function(e){ searchTerm=e.target.value.toLowerCase(); rT(); };
+rT();
+
+// === CHARTS (lazy) ===
+var chartsInit = false;
+function initCharts(){
+  if(chartsInit) return; chartsInit=true;
+  var labels=ranked.map(function(r){ return r.n.split(' ')[0]; });
+  var cPal=['#1B3A5F','#C8992A','#2E6FAD','#2ECC71','#E74C3C','#9B59B6','#F39C12','#1ABC9C','#E67E22'];
+  function cc(arr,g,w){ return arr.map(function(v){ return v>=g?'#2ECC71':v>=w?'#F39C12':'#E74C3C'; }); }
+
+  new Chart($('chart-valor'),{type:'bar',data:{labels:labels,datasets:[
+    {label:'Pedidos (007)',data:ranked.map(function(r){return r.d.d7.val||0;}),backgroundColor:'#1B3A5F'},
+    {label:'OC (404)',data:ranked.map(function(r){return r.d.d4.val||0;}),backgroundColor:'#C8992A'}
+  ]},options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:function(v){return '$'+(v/1e6).toFixed(1)+'M';}}}}}});
+
+  var convD=ranked.map(function(r){return r.d.d7.conv||0;});
+  new Chart($('chart-conversion'),{type:'bar',data:{labels:labels,datasets:[{data:convD,backgroundColor:cc(convD,75,50)}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{max:100,ticks:{callback:function(v){return v+'%';}}}}}});
+
+  var cumplD=ranked.map(function(r){return r.d.d4.cumpl||0;});
+  new Chart($('chart-cumplimiento'),{type:'bar',data:{labels:labels,datasets:[{data:cumplD,backgroundColor:cc(cumplD,75,50)}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{max:100,ticks:{callback:function(v){return v+'%';}}}}}});
+
+  var factD=ranked.map(function(r){return r.d.d4.fact||0;});
+  new Chart($('chart-facturacion'),{type:'bar',data:{labels:labels,datasets:[{data:factD,backgroundColor:cc(factD,70,40)}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{max:100,ticks:{callback:function(v){return v+'%';}}}}}});
+
+  new Chart($('chart-vencidas'),{type:'bar',data:{labels:labels,datasets:[{data:ranked.map(function(r){return r.d.d4.venc||0;}),backgroundColor:'#E74C3C'}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+
+  new Chart($('chart-pie'),{type:'doughnut',data:{labels:ranked.map(function(r){return r.n;}),datasets:[{data:ranked.map(function(r){return r.d.d7.val||0;}),backgroundColor:cPal}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}});
+}
+
+// === TABS ===
+function switchTab(tabId){
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  $('tab-'+tabId).classList.add('active');
+  var btn = document.querySelector('.tab[data-tab="'+tabId+'"]');
+  if(btn) btn.classList.add('active');
+  if(tabId==='graficos') setTimeout(initCharts,50);
+}
+
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    switchTab(tab.dataset.tab);
+  });
+});
+</script>
+</body>
+</html>
