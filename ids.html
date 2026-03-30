@@ -561,7 +561,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 30/03/2026 16:47
+    Generado: 30/03/2026 16:52
     <div class="header-excel-ts">Excel: 30/03/2026 16:46</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -924,7 +924,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
       <span class="asig-count" id="asig-count-msg">0 asignaciones</span>
       <button class="btn-asig limpiar" onclick="limpiarAsigManuales()">Limpiar</button>
       <button class="btn-asig aplicar" onclick="aplicarAsigManuales()">&#11015; Descargar Asignaciones</button>
-      <button class="btn-asig actualizar" id="btn-actualizar" onclick="actualizarDesdeServidor()" style="display:none">&#9889; Actualizar</button>
+      <button class="btn-asig actualizar" id="btn-actualizar" onclick="mostrarInstrucciones()" style="display:none">&#9889; Aplicar al Excel</button>
     </div>
   </div>
 </div>
@@ -1035,7 +1035,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 30/03/2026 16:47
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 30/03/2026 16:52
 </div>
 
 </div><!-- /tab-dashboard -->
@@ -1462,62 +1462,14 @@ function aplicarAsigManuales() {
   if (btnAct) btnAct.style.display = 'inline-block';
 }
 
-// ── SERVIDOR LOCAL — ACTUALIZAR AUTOMATICO ──────────────
-const SERVIDOR_URL = 'http://localhost:8585';
-let servidorActivo = false;
-
-// Verificar si el servidor esta corriendo al cargar
-(function checkServidor() {
-  fetch(SERVIDOR_URL + '/ping', {mode:'cors'})
-    .then(r => r.json())
-    .then(d => {
-      if (d.ok) {
-        servidorActivo = true;
-        const btnAct = document.getElementById('btn-actualizar');
-        if (btnAct && Object.keys(asigManuales).length > 0) btnAct.style.display = 'inline-block';
-      }
-    })
-    .catch(() => { servidorActivo = false; });
-})();
-
-function actualizarDesdeServidor() {
-  const btnAct = document.getElementById('btn-actualizar');
-  const textoOriginal = btnAct.innerHTML;
-  btnAct.disabled = true;
-  btnAct.innerHTML = '&#8987; Aplicando...';
-  btnAct.style.opacity = '0.7';
-
-  fetch(SERVIDOR_URL + '/aplicar', {method:'POST', mode:'cors'})
-    .then(r => r.json())
-    .then(data => {
-      btnAct.disabled = false;
-      btnAct.style.opacity = '1';
-
-      if (data.ok && data.aplicados > 0) {
-        btnAct.innerHTML = '&#10004; Listo!';
-        btnAct.style.background = '#27ae60';
-        alert('Asignaciones aplicadas correctamente:\n\n'
-          + '  Aplicados: ' + data.aplicados + '\n'
-          + '  Ignorados: ' + data.ignorados + '\n'
-          + '  Protegidos: ' + data.protegidos + '\n\n'
-          + 'El dashboard se recargara automaticamente.');
-        setTimeout(() => location.reload(), 1500);
-      } else if (data.ok && data.aplicados === 0) {
-        btnAct.innerHTML = textoOriginal;
-        alert('No se aplicaron cambios:\n' + (data.mensaje || 'Sin cambios'));
-      } else {
-        btnAct.innerHTML = textoOriginal;
-        alert('Error: ' + (data.error || 'Error desconocido'));
-      }
-    })
-    .catch(err => {
-      btnAct.disabled = false;
-      btnAct.style.opacity = '1';
-      btnAct.innerHTML = textoOriginal;
-      alert('No se pudo conectar con el servidor local.\n\n'
-        + 'Asegurate de que Ejecuta-IDs.bat este corriendo.\n'
-        + 'O usa la opcion 5 del menu para aplicar manualmente.');
-    });
+// ── APLICAR ASIGNACIONES ──────────────
+function mostrarInstrucciones() {
+  alert('JSON descargado en tu carpeta de Descargas.\n\n'
+    + 'Para aplicar las asignaciones al Excel:\n\n'
+    + '  Ejecuta "Aplicar Asignaciones IDs.bat"\n'
+    + '  en tu carpeta Paneles Compras PTC del escritorio.\n\n'
+    + 'Esto actualiza el Excel maestro, regenera\n'
+    + 'el dashboard y lo publica automaticamente.');
 }
 
 function idTag(id) {
@@ -1855,7 +1807,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 30/03/2026 16:47
+    Generado: 30/03/2026 16:52
   </div>
 </div>
 
@@ -1864,7 +1816,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 30/03/2026 16:47 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 30/03/2026 16:52 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>
