@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AyB Control — Moon Palace The Grand</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   MOON PALACE AYB DASHBOARD — Premium Executive
+   Metodologia Z: izq→der, arriba→abajo diagonal
+   ═══════════════════════════════════════════════════ */
+:root {
+  --navy:#1B3A5F; --navy-deep:#0f2440; --gold:#C8992A; --gold-light:#e8c56d;
+  --blue:#2E6FAD; --bg:#F2F4F8; --bg-warm:#f8f7f5;
+  --text:#1a2535; --text-soft:#6b7a8d; --text-muted:#a0aab5;
+  --verde:#1a8c50; --amarillo:#d4870a; --rojo:#c0392b; --azul:#2980b9;
+  --card:#ffffff; --shadow:0 1px 3px rgba(15,36,64,.06), 0 6px 20px rgba(15,36,64,.04);
+  --shadow-hover:0 4px 12px rgba(15,36,64,.1), 0 12px 32px rgba(15,36,64,.06);
+  --radius:10px; --radius-sm:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+/* ── HEADER ── */
+.header{
+  background:linear-gradient(135deg,var(--navy-deep) 0%,var(--navy) 60%,#1f4a75 100%);
+  padding:0 clamp(20px,4vw,48px); display:flex; align-items:stretch; min-height:72px;
+  border-bottom:2px solid var(--gold);
+  position:sticky; top:0; z-index:100;
+}
+.header::before{
+  content:''; position:absolute; top:0; right:0; width:40%; height:100%;
+  background:radial-gradient(ellipse at 70% 50%,rgba(200,153,42,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.h-brand{display:flex;align-items:center;gap:14px;padding:16px 0;flex-shrink:0}
+.h-brand .logo{width:36px;height:36px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',Georgia,serif;font-size:18px;color:var(--navy-deep);font-weight:700}
+.h-brand h1{font-family:'DM Serif Display',Georgia,serif;font-size:17px;color:#fff;font-weight:400;letter-spacing:.2px;line-height:1.2}
+.h-brand h1 span{display:block;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--gold-light);text-transform:uppercase;letter-spacing:2.5px;margin-top:2px;font-weight:500}
+.h-sep{width:1px;background:rgba(255,255,255,.12);margin:12px 24px;flex-shrink:0}
+.h-nav{display:flex;align-items:stretch;gap:0;flex:1;overflow-x:auto;scroll-behavior:smooth;-ms-overflow-style:none;scrollbar-width:none}
+.h-nav::-webkit-scrollbar{display:none}
+.nav-arrow{
+  display:flex;align-items:center;justify-content:center;width:28px;flex-shrink:0;
+  background:transparent;border:none;color:rgba(255,255,255,.35);font-size:16px;
+  cursor:pointer;transition:color .15s;padding:0;
+}
+.nav-arrow:hover{color:rgba(255,255,255,.85)}
+.tab-btn{
+  padding:0 18px;color:rgba(255,255,255,.45);font-size:12px;font-weight:500;
+  border:none;background:transparent;cursor:pointer;letter-spacing:.3px;
+  border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;
+  position:relative;
+}
+.tab-btn:hover{color:rgba(255,255,255,.8)}
+.tab-btn.activo{color:#fff;border-bottom-color:var(--gold);background:rgba(255,255,255,.04)}
+.tab-btn.activo::after{content:'';position:absolute;bottom:-2px;left:30%;right:30%;height:2px;background:var(--gold);filter:blur(3px)}
+.h-meta{display:flex;align-items:center;gap:16px;padding:16px 0;margin-left:auto;flex-shrink:0}
+.h-periodo{text-align:right;font-size:11px;color:rgba(255,255,255,.5);line-height:1.5}
+.h-periodo strong{display:block;font-size:14px;color:#fff;font-weight:700}
+.btn-print{
+  padding:7px 16px;background:transparent;color:var(--gold-light);border:1px solid rgba(200,153,42,.4);
+  border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-weight:500;
+  letter-spacing:.5px;transition:all .15s;text-transform:uppercase;
+}
+.btn-print:hover{background:var(--gold);color:var(--navy-deep);border-color:var(--gold)}
+
+/* ── MAIN ── */
+.main{padding:clamp(16px,3vw,28px) clamp(16px,4vw,48px) 40px}
+.tab-content{display:none;animation:tabIn .35s ease}
+.tab-content.activo{display:block}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Z-LAYOUT SYSTEM ──
+   Fila 1: izquierda → derecha (ojo escanea)
+   Diagonal: baja al siguiente bloque
+   Fila 2: izquierda → derecha
+   ─────────────────────── */
+.z-row{display:grid;gap:16px;margin-bottom:16px}
+.z-2{grid-template-columns:1fr 1fr}
+.z-3{grid-template-columns:1fr 1fr 1fr}
+.z-4{grid-template-columns:repeat(4,1fr)}
+.z-6040{grid-template-columns:3fr 2fr}
+.z-7030{grid-template-columns:7fr 3fr}
+.z-full{grid-template-columns:1fr}
+
+/* ── KPI CARDS ── */
+.kpi{
+  background:var(--card);border-radius:var(--radius);padding:18px 20px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;cursor:default;
+}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#dde}
+.kpi.s-verde::before{background:var(--verde)}
+.kpi.s-amarillo::before{background:var(--amarillo)}
+.kpi.s-rojo::before{background:var(--rojo)}
+.kpi.s-azul::before{background:var(--azul)}
+.kpi.s-navy::before{background:var(--navy)}
+.kpi.s-gold::before{background:var(--gold)}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.kpi-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;font-weight:500}
+.kpi-trend{font-size:14px;opacity:.6}
+.kpi-val{font-size:28px;font-weight:700;line-height:1;letter-spacing:-.5px}
+.kpi.s-verde .kpi-val{color:var(--verde)}
+.kpi.s-amarillo .kpi-val{color:var(--amarillo)}
+.kpi.s-rojo .kpi-val{color:var(--rojo)}
+.kpi.s-azul .kpi-val{color:var(--azul)}
+.kpi.s-navy .kpi-val{color:var(--navy)}
+.kpi.s-gold .kpi-val{color:var(--gold)}
+.kpi-meta{font-size:10px;color:var(--text-muted);margin-top:4px}
+.kpi-bar{margin-top:10px;background:#eef1f5;border-radius:3px;height:4px;overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.22,1,.36,1)}
+.kpi-bar-fill.verde{background:var(--verde)}.kpi-bar-fill.amarillo{background:var(--amarillo)}
+.kpi-bar-fill.rojo{background:var(--rojo)}.kpi-bar-fill.azul{background:var(--azul)}.kpi-bar-fill.gold{background:var(--gold)}
+
+/* ── RESUMEN BOX ── */
+.resumen{
+  background:var(--card);border-radius:var(--radius);padding:20px 22px;
+  box-shadow:var(--shadow);border-left:3px solid var(--gold);
+}
+.resumen h3{font-family:'DM Serif Display',Georgia,serif;font-size:15px;color:var(--navy);margin-bottom:10px;font-weight:400}
+.resumen p{font-size:12.5px;line-height:1.7;color:var(--text-soft)}
+.t-ok{color:var(--verde);font-weight:600}.t-warn{color:var(--amarillo);font-weight:600}.t-bad{color:var(--rojo);font-weight:600}
+
+/* ── SECTION TITLE ── */
+.sec-title{
+  font-family:'DM Serif Display',Georgia,serif;font-size:16px;color:var(--navy);
+  margin-bottom:16px;padding-bottom:6px;
+  border-bottom:1.5px solid var(--gold);display:inline-block;font-weight:400;
+}
+
+/* ── TABLE CARD ── */
+.tbl-card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+}
+.tbl-head{
+  padding:14px 20px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid #eef1f5;flex-wrap:wrap;gap:8px;
+}
+.tbl-head strong{font-size:13px;color:var(--navy);font-weight:700}
+.tbl-head span{font-size:11px;color:var(--text-muted)}
+.tbl-head input{
+  padding:7px 12px;border:1px solid #dde4ee;border-radius:var(--radius-sm);
+  font-size:12px;outline:none;width:200px;font-family:inherit;
+}
+.tbl-head input:focus{border-color:var(--blue)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead tr{background:#f9fafb}
+thead th{
+  padding:10px 14px;text-align:left;font-size:9.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);
+  border-bottom:1.5px solid #edf0f5;cursor:pointer;user-select:none;white-space:nowrap;
+}
+thead th:hover{color:var(--navy)}
+thead th .si{font-size:8px;margin-left:3px;opacity:.3}
+tbody tr{border-bottom:1px solid #f4f5f8;transition:background .1s}
+tbody tr:hover{background:#f7f9fc}
+tbody td{padding:10px 14px;vertical-align:middle}
+.badge{
+  display:inline-block;padding:2px 9px;border-radius:20px;
+  font-size:10px;font-weight:600;white-space:nowrap;letter-spacing:.2px;
+}
+.b-verde{background:#eafaf1;color:#1a7a42;border:1px solid #b8e6cc}
+.b-amarillo{background:#fef9e7;color:#7d6608;border:1px solid #f5e088}
+.b-rojo{background:#fdecea;color:#b53225;border:1px solid #f0a8a2}
+
+/* ── CHART CARD ── */
+.chart-card{
+  background:var(--card);border-radius:var(--radius);padding:18px 20px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;
+}
+.chart-card h3{font-size:12px;color:var(--navy);font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.4px}
+.chart-wrap{position:relative;flex:1;min-height:0}
+
+/* ── ALERTAS ── */
+.alerta{
+  background:var(--card);border-radius:var(--radius);padding:16px 20px;
+  box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start;
+  margin-bottom:10px;border-left:3px solid #dde;transition:transform .15s;
+}
+.alerta:hover{transform:translateX(3px)}
+.alerta.a-rojo{border-left-color:var(--rojo)}
+.alerta.a-amarillo{border-left-color:var(--amarillo)}
+.alerta.a-verde_info{border-left-color:var(--verde)}
+.alerta .a-icon{font-size:22px;flex-shrink:0;line-height:1}
+.alerta h4{font-size:13px;color:var(--navy);margin-bottom:3px;font-weight:700}
+.alerta p{font-size:11.5px;color:var(--text-soft);line-height:1.5}
+.alerta .a-impacto{font-size:10.5px;color:var(--rojo);font-weight:600;margin-top:5px}
+.alerta .a-accion{
+  font-size:10.5px;color:var(--blue);margin-top:3px;
+  padding:3px 8px;background:#eef4ff;border-radius:4px;display:inline-block;
+}
+
+/* ── CENTRO CARDS ── */
+.centros-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.cc{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;cursor:pointer}
+.cc:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.cc:active{transform:translateY(-1px)}
+.cc-top{padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.cc-top h4{color:#fff;font-size:13px;font-weight:700;letter-spacing:.3px}
+.cc-top small{color:rgba(255,255,255,.65);font-size:9.5px;display:block;margin-top:1px}
+.cc-top .pct{color:#fff;font-size:20px;font-weight:800}
+.cc-body{padding:12px 16px}
+.cc-row{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:5px}
+.cc-row .l{color:var(--text-muted)}.cc-row .v{font-weight:600}
+.cc-progress{background:#e8eaed;border-radius:6px;height:6px;margin-top:8px;overflow:hidden}
+.cc-progress-fill{height:100%;border-radius:6px;transition:width .6s ease}
+
+/* ── SELECTOR ── */
+.sel-wrap{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.sel-wrap label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.sel-wrap select{padding:8px 14px;border:1px solid #dde4ee;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;background:var(--card);outline:none;cursor:pointer;min-width:200px}
+.sel-wrap select:focus{border-color:var(--blue)}
+.det-centro{display:none}.det-centro.activo{display:block;animation:tabIn .3s ease}
+
+/* ── DATOS SISTEMA ── */
+.ds td:first-child{font-weight:600;color:var(--navy)}
+.st-ok{color:var(--verde);font-weight:600}.st-warn{color:var(--amarillo);font-weight:600}
+
+/* ── FOOTER ── */
+.footer{
+  background:var(--navy-deep);color:rgba(255,255,255,.35);text-align:center;
+  padding:16px 40px;font-size:10px;letter-spacing:.3px;
+  border-top:1.5px solid var(--gold);
+}
+
+/* ── STAGGER ── */
+.stg>*{opacity:0;animation:tabIn .4s ease forwards}
+.stg>*:nth-child(1){animation-delay:.04s}.stg>*:nth-child(2){animation-delay:.08s}
+.stg>*:nth-child(3){animation-delay:.12s}.stg>*:nth-child(4){animation-delay:.16s}
+.stg>*:nth-child(5){animation-delay:.2s}.stg>*:nth-child(6){animation-delay:.24s}
+.stg>*:nth-child(7){animation-delay:.28s}.stg>*:nth-child(8){animation-delay:.3s}
+.stg>*:nth-child(9){animation-delay:.34s}.stg>*:nth-child(10){animation-delay:.38s}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .z-2,.z-3,.z-6040,.z-7030{grid-template-columns:1fr}
+  .z-4{grid-template-columns:1fr 1fr}
+  .nav-arrow{display:none}
+}
+@media(max-width:600px){
+  .header{flex-wrap:wrap;min-height:auto}
+  .h-sep{display:none}
+  .h-nav{order:3;width:100%;overflow-x:auto;padding-bottom:4px}
+  .tab-btn{padding:0 12px;font-size:11px;min-height:40px}
+  .h-meta{display:none}
+  .z-3,.z-4{grid-template-columns:1fr 1fr}
+  .centros-grid{grid-template-columns:1fr}
+  .main{padding:14px 14px 30px}
+}
+@media(max-width:420px){.z-4{grid-template-columns:1fr}}
+
+/* ── MODAL DETALLE CENTRO ── */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,36,64,.55);
+  backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.modal-overlay.visible{opacity:1;pointer-events:all}
+.modal-panel{
+  background:var(--bg);border-radius:14px;width:94%;max-width:820px;max-height:90vh;
+  overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);
+  transform:translateY(20px) scale(.97);transition:transform .3s cubic-bezier(.22,1,.36,1);
+}
+.modal-overlay.visible .modal-panel{transform:translateY(0) scale(1)}
+.modal-header{
+  padding:20px 28px;display:flex;justify-content:space-between;align-items:center;
+  border-radius:14px 14px 0 0;position:sticky;top:0;z-index:2;
+}
+.modal-header h2{font-family:'DM Serif Display',Georgia,serif;font-size:20px;color:#fff;font-weight:400}
+.modal-header small{display:block;font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.modal-header .pct-big{font-size:28px;font-weight:800;color:#fff}
+.modal-close{
+  position:absolute;top:14px;right:18px;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.modal-close:hover{background:rgba(255,255,255,.3)}
+.modal-body{padding:20px 28px 28px}
+.modal-section{margin-bottom:20px}
+.modal-section-title{
+  font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid #e8ebf0;
+}
+.modal-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.modal-kpi{
+  background:var(--card);border-radius:var(--radius);padding:14px 16px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05);text-align:center;
+}
+.modal-kpi .mk-label{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.modal-kpi .mk-val{font-size:20px;font-weight:800;margin-top:4px;line-height:1}
+.modal-kpi .mk-meta{font-size:10px;color:var(--text-soft);margin-top:4px}
+.modal-cats{display:flex;flex-wrap:wrap;gap:6px}
+.modal-cat{
+  padding:4px 12px;background:#eef4ff;border-radius:20px;font-size:10.5px;
+  color:var(--blue);font-weight:500;
+}
+.modal-ids-bar{
+  background:#e8eaed;border-radius:6px;height:10px;overflow:hidden;margin-top:8px;
+}
+.modal-ids-bar-fill{height:100%;border-radius:6px;transition:width .6s ease}
+.modal-chart-wrap{height:180px;position:relative}
+.modal-items{max-height:200px;overflow-y:auto}
+.modal-items table{width:100%;border-collapse:collapse;font-size:11.5px}
+.modal-items thead th{
+  padding:7px 10px;text-align:left;font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);
+  border-bottom:1.5px solid #edf0f5;background:#f9fafb;position:sticky;top:0;
+}
+.modal-items tbody td{padding:7px 10px;border-bottom:1px solid #f4f5f8}
+@media(max-width:600px){
+  .modal-panel{width:98%;max-height:95vh;border-radius:10px}
+  .modal-kpis{grid-template-columns:1fr 1fr}
+  .modal-body{padding:16px 18px 22px}
+}
+
+/* ── PRINT ── */
+@media print{
+  .h-nav,.btn-print,.footer{display:none}
+  .tab-content{display:block!important;page-break-inside:avoid}
+  .header{background:var(--navy-deep)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .kpi,.alerta,.cc,.chart-card,.tbl-card,.resumen{break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HEADER ═══════ -->
+<div class="header">
+  <div class="h-brand">
+    <div class="logo">MP</div>
+    <h1>Control AyB<span>Moon Palace The Grand &middot; Punta Cana</span></h1>
+  </div>
+  <div class="h-sep"></div>
+  <button class="nav-arrow" id="navL" onclick="scrollNav(-1)" aria-label="Desplazar tabs a la izquierda">&#9664;</button>
+  <div class="h-nav" id="hNav">
+    <button class="tab-btn activo" data-tab="resumen">Resumen</button>
+    <button class="tab-btn" data-tab="presupuesto">Presupuesto</button>
+    <button class="tab-btn" data-tab="tendencia">Tendencia</button>
+    <button class="tab-btn" data-tab="centros">Centros</button>
+    <button class="tab-btn" data-tab="proveedores">Proveedores</button>
+    <button class="tab-btn" data-tab="alertas">Alertas</button>
+    <button class="tab-btn" data-tab="datos">Datos</button>
+  </div>
+  <button class="nav-arrow" id="navR" onclick="scrollNav(1)" aria-label="Desplazar tabs a la derecha">&#9654;</button>
+  <div class="h-meta">
+    <div class="h-periodo"><strong>Ene — Mar 2026</strong><span id="fechaGen"></span></div>
+    <button class="btn-print" onclick="window.print()">Imprimir</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════
+     TAB 1: RESUMEN EJECUTIVO
+     Z-pattern: 4 KPIs top → 3 KPIs + Resumen
+     ═══════════════════════════════════════════ -->
+<div class="tab-content activo" id="tab-resumen">
+  <!-- Z Fila 1: 4 KPIs principales (izq → der) -->
+  <div class="z-row z-4 stg" id="kpiTop"></div>
+  <!-- Z Fila 2: 3 KPIs secundarios (izq) + Resumen ejecutivo (der) -->
+  <div class="z-row z-6040">
+    <div class="z-row z-3 stg" id="kpiBot" style="margin-bottom:0"></div>
+    <div class="resumen" id="resumenBox"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 2: PRESUPUESTO
+     Z-pattern: Tabla (arriba) → Barras + Donut (abajo)
+     ═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-presupuesto">
+  <div class="sec-title">Ejecucion Presupuestaria Q1 2026</div>
+  <!-- Z Fila 1: Tabla completa -->
+  <div class="tbl-card" style="margin-bottom:16px">
+    <div class="tbl-head">
+      <div><strong>Por Centro de Consumo</strong> <span style="margin-left:8px">10 centros &middot; Marzo 2026</span></div>
+      <input type="text" id="filtroPres" placeholder="Buscar centro..." oninput="filtrarPres()" aria-label="Filtrar centros de consumo">
+    </div>
+    <table id="tblPres">
+      <thead><tr>
+        <th onclick="sortTbl(0)">Centro <span class="si">&#9650;&#9660;</span></th>
+        <th onclick="sortTbl(1)">Plan (USD) <span class="si">&#9650;&#9660;</span></th>
+        <th onclick="sortTbl(2)">Real (USD) <span class="si">&#9650;&#9660;</span></th>
+        <th onclick="sortTbl(3)">Var (USD) <span class="si">&#9650;&#9660;</span></th>
+        <th onclick="sortTbl(4)">% <span class="si">&#9650;&#9660;</span></th>
+        <th>Estado</th>
+      </tr></thead>
+      <tbody id="tbPres"></tbody>
+    </table>
+  </div>
+  <!-- Z Fila 2: Barras (60%) + Donut (40%) -->
+  <div class="z-row z-6040">
+    <div class="chart-card"><h3>Plan vs Real por Centro</h3><div class="chart-wrap" style="height:240px"><canvas id="cBar"></canvas></div></div>
+    <div class="chart-card"><h3>Distribucion del Gasto</h3><div class="chart-wrap" style="height:240px"><canvas id="cDonut"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 3: TENDENCIA
+     Z-pattern: Chart (izq 60%) + Analisis (der 40%)
+     ═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-tendencia">
+  <div class="sec-title">Tendencia Mensual Ene — Mar 2026</div>
+  <div class="z-row z-6040">
+    <div class="chart-card"><h3>Gasto por Centro + Proyeccion Abril</h3><div class="chart-wrap" style="height:260px"><canvas id="cTrend"></canvas></div></div>
+    <div class="resumen" style="align-self:start">
+      <h3>Analisis</h3>
+      <p>
+        <strong>Temporada alta (Ene-Mar):</strong> Factor 110% aplicado. Gasto se incremento en centros de alto volumen.<br><br>
+        <strong>Proyeccion Abril:</strong> Reduccion a 90% con transicion a temporada baja.<br><br>
+        <span class="t-bad">BARES +8%</span> y <span class="t-bad">HABIBI +6%</span> requieren atencion especial en Q2 para reconducir desviacion.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 4: CENTROS DE CONSUMO
+     Z-pattern: Selector + Cards grid → Detalle
+     ═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-centros">
+  <div class="sec-title">Centros de Consumo y Catalogo de IDs</div>
+  <!-- Z Fila 1: 4 mini-KPIs de cobertura + selector -->
+  <div class="z-row z-6040" style="margin-bottom:16px">
+    <div class="z-row z-4 stg" id="idsKpis" style="margin-bottom:0"></div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:8px">
+      <div class="sel-wrap" style="margin-bottom:0">
+        <label>Filtrar centro:</label>
+        <select id="selCentro" onchange="showDetalle()"><option value="">— Todos —</option></select>
+      </div>
+      <div style="font-size:10px;color:var(--text-muted)">Fuente: Maestro IDs SAP &middot; 112/464 productos con ID &middot; ZPMM006: 4,361 materiales</div>
+    </div>
+  </div>
+  <!-- Z Fila 2: Cards de centros -->
+  <div class="centros-grid stg" id="centrosGrid"></div>
+  <!-- Z Fila 3: Detalle centro + tabla IDs -->
+  <div id="detalleWrap"></div>
+  <!-- Z Fila 4: Tabla resumen IDs por centro -->
+  <div class="tbl-card" style="margin-top:16px">
+    <div class="tbl-head">
+      <div><strong>Catalogo de IDs SAP por Centro</strong> <span style="margin-left:8px">Datos reales del maestro</span></div>
+      <input type="text" id="filtroIDs" placeholder="Buscar producto..." oninput="filtrarIDs()" aria-label="Filtrar productos por ID">
+    </div>
+    <table id="tblIDs">
+      <thead><tr>
+        <th onclick="sortTblIDs(0)">Centro <span class="si">&#9650;&#9660;</span></th>
+        <th onclick="sortTblIDs(1)">Descripcion Chef <span class="si">&#9650;&#9660;</span></th>
+        <th onclick="sortTblIDs(2)">ID SAP <span class="si">&#9650;&#9660;</span></th>
+        <th onclick="sortTblIDs(3)">Desc SAP <span class="si">&#9650;&#9660;</span></th>
+        <th>Estado</th>
+      </tr></thead>
+      <tbody id="tbIDs"></tbody>
+    </table>
+    <div style="padding:10px 20px;font-size:10px;color:var(--text-muted);border-top:1px solid #f0f3f8">
+      Mostrando top 20 productos por centro &middot; Total: 112 de 464 con ID SAP &mdash; 352 pendientes
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: PROVEEDORES
+     Z-pattern: KPIs + OTIF chart → Ranking tabla + Pendientes
+     ═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-proveedores">
+  <div class="sec-title">Ranking y OTIF de Proveedores</div>
+  <!-- Z Fila 1: 4 KPIs full width -->
+  <div class="z-row z-4 stg" id="provKpis"></div>
+  <!-- Z Fila 2: Donut OTIF (izq) + Tarjetas resumen (der) -->
+  <div class="z-row z-3" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="chart-card"><h3>Distribucion OTIF</h3><div class="chart-wrap" style="height:200px"><canvas id="cOtif"></canvas></div></div>
+    <div class="resumen" style="align-self:stretch;display:flex;flex-direction:column;justify-content:center">
+      <h3>Entregas Pendientes</h3>
+      <p id="pendientesInfo"></p>
+    </div>
+    <div class="resumen" style="border-left-color:var(--rojo);align-self:stretch;display:flex;flex-direction:column;justify-content:center">
+      <h3>Accion Requerida</h3>
+      <p>
+        OTIF global en <span class="t-bad">49.9%</span> — debajo de meta 92%.<br><br>
+        <strong>850 lineas de OC</strong> pendientes de entrega.<br>
+        <span style="font-size:10.5px;color:var(--text-muted)">OTIF proxy (entregas concluidas vs total).</span>
+      </p>
+    </div>
+  </div>
+  <!-- Z Fila 3: Ranking tabla full width -->
+  <div class="z-row z-full">
+    <div class="tbl-card">
+      <div class="tbl-head">
+        <div><strong>Top 15 Proveedores por Monto</strong> <span style="margin-left:8px">Datos reales ZPMM404</span></div>
+        <input type="text" id="filtroProv" placeholder="Buscar proveedor..." oninput="filtrarProv()" aria-label="Filtrar proveedores">
+      </div>
+      <table id="tblProv">
+        <thead><tr>
+          <th onclick="sortTblProv(0)">Proveedor <span class="si">&#9650;&#9660;</span></th>
+          <th onclick="sortTblProv(1)">OC <span class="si">&#9650;&#9660;</span></th>
+          <th onclick="sortTblProv(2)">Monto (USD) <span class="si">&#9650;&#9660;</span></th>
+          <th onclick="sortTblProv(3)">OTIF <span class="si">&#9650;&#9660;</span></th>
+          <th>Estado</th>
+        </tr></thead>
+        <tbody id="tbProv"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB: ALERTAS
+     Z-pattern: Criticas (izq) + Atencion (der)
+     ═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-alertas">
+  <div class="sec-title">Alertas Activas</div>
+  <div class="z-row z-2" id="alertasWrap">
+    <div id="alertasRojas"></div>
+    <div id="alertasAmarillas"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 6: DATOS DEL SISTEMA
+     ═══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-datos">
+  <div class="sec-title">Fuentes de Datos</div>
+  <div class="z-row z-7030">
+    <div class="tbl-card">
+      <div class="tbl-head"><strong>Estado de Datos</strong><span>Revision: 29/03/2026</span></div>
+      <table class="ds">
+        <thead><tr><th>Fuente</th><th>Descripcion</th><th>Registros</th><th>Actualizado</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>ZPMM006</td><td>Datos maestros materiales</td><td>4,300</td><td>28/03/2026</td><td class="st-ok">Actualizado</td></tr>
+          <tr><td>ZPMM007</td><td>Solicitudes → Pedidos</td><td>2,953</td><td>28/03/2026</td><td class="st-ok">Actualizado</td></tr>
+          <tr><td>ZPMM404</td><td>OC → Entregas → Facturas</td><td>8,523</td><td>28/03/2026</td><td class="st-ok">Actualizado</td></tr>
+          <tr><td>Presupuesto</td><td>Distribucion Q1 2026</td><td>10 centros</td><td>15/01/2026</td><td class="st-ok">Vigente</td></tr>
+          <tr><td>Control IDs</td><td>Catalogo por centro</td><td>112/464</td><td>29/03/2026</td><td class="st-warn">24.1%</td></tr>
+          <tr><td>Muestras</td><td>Evaluacion proveedores</td><td>118</td><td>26/03/2026</td><td class="st-ok">Actualizado</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="resumen" style="border-left-color:var(--amarillo);align-self:start">
+      <h3>Nota</h3>
+      <p>Datos de <strong>ejemplo para demostracion</strong>. Valores reales se actualizan conectando SAP (ZPMM006/007/404) y presupuesto aprobado.<br><br>
+      <span style="font-size:10px;color:var(--text-muted)">Fuentes: OneDrive/SAP-Seguimiento-OC/<br>Base: $3,575,000 USD/mes Q1</span></p>
+    </div>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<!-- ═══════ MODAL DETALLE CENTRO ═══════ -->
+<div class="modal-overlay" id="modalCentro" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal-panel">
+    <div class="modal-header" id="modalHeader">
+      <div><h2 id="modalTitulo"></h2><small id="modalSub"></small></div>
+      <div class="pct-big" id="modalPct"></div>
+      <button class="modal-close" onclick="cerrarModal()" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="footer">Sistema Analista de AyB — Moon Palace The Grand PTC &middot; Generado automaticamente &middot; 2026</div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════ -->
+<script>
+// ── DATA ────────────────────────────────────
+const KPI=[{id: "food_cost", label: "Food Cost", val: 31.2, u: "%", meta: "28-35%", s: "verde", t: "→", bar: 78}, {id: "desviacion", label: "Desviacion Presupuestal", val: 3.8, u: "%", meta: "<+-5%", s: "amarillo", t: "↑", bar: 96, pre: "+"}, {id: "otif", label: "OTIF Proveedores", val: 89.3, u: "%", meta: ">92%", s: "rojo", t: "↓", bar: 89}, {id: "rotacion", label: "Rotacion de Inventario", val: 13.2, u: "x", meta: "12-15x anual", s: "verde", t: "→", bar: 73}, {id: "merma", label: "Merma", val: 2.4, u: "%", meta: "<3%", s: "amarillo", t: "↑", bar: 52}, {id: "costo", label: "Costo /Huesped/Dia", val: 47.8, u: "USD", meta: "$40-55 USD", s: "verde", t: "→", bar: 68, pre: "$"}, {id:'ids',label:'Cobertura IDs',val:24.1,u:'%',meta:'>90%',s:'rojo',t:'↓',bar:24.1}];
+
+const PRES=[{c: "BARES", plan: 1287000, real: 1373850, tipo: "Bebidas", chef: "Christian Diaz"}, {c: "Banquetes", plan: 1072500, real: 1198065, tipo: "Eventos", chef: "Chef Banquetes"}, {c: "Cocina Central", plan: 858000, real: 855672, tipo: "Produccion", chef: "Chef Central"}, {c: "HABIBI", plan: 750750, real: 761851, tipo: "A la carta", chef: "Liliana Quiroz Sanchez"}, {c: "NIKOS", plan: 858000, real: 837280, tipo: "A la carta", chef: "Dario Ricardo Suarez Plua"}, {c: "Reserva", plan: 965250, real: 959645, tipo: "Contingencia", chef: "N/A"}, {c: "PASTELERIA", plan: 1072500, real: 1030592, tipo: "Produccion", chef: "Manuel Uscanga Medina"}, {c: "Pool/Beach Bars", plan: 536250, real: 547034, tipo: "Bebidas", chef: "Jefe de Bares"}, {c: "Buffet Principal", plan: 2681250, real: 2808595, tipo: "Buffet", chef: "Chef Ejecutivo"}, {c: "Room Service", plan: 643500, real: 673469, tipo: "Servicio", chef: "Chef Room Service"}];
+PRES.forEach(d=>{d.var=d.real-d.plan;d.pct=(d.real-d.plan)/d.plan*100;d.s=Math.abs(d.pct)<=3?'verde':Math.abs(d.pct)<=5?'amarillo':'rojo'});
+
+const COL=['#1B3A5F','#C8992A','#2E6FAD','#4CAF50','#E74C3C','#F39C12','#9B59B6','#1ABC9C','#34495E','#E67E22'];
+
+const TREND={
+  m:['Enero','Febrero','Marzo','Abril (Proy.)'],
+  c:{'Buffet Principal':[320000,310000,307438,268000],'NIKOS':[98000,92000,90280,78000],'HABIBI':[90000,88000,87265,76000],'PASTELERIA':[128000,124000,119800,105000],'BARES':[162000,155000,146320,128000]},
+  plan:[1191667,1191667,1191667,1191667]
+};
+
+const CENTROS=[{n: "BARES", tipo: "Bebidas (Mini Bares)", chef: "Christian Diaz", col: "#E74C3C", prod: ["Alcoholicas", "Jugos/Pulpas", "Jarabes/Mixers", "Botanicos"], pct: 106.7, ok: false}, {n: "Banquetes", tipo: "Eventos y Grupos", chef: "Chef Banquetes", col: "#F39C12", prod: ["Proteinas", "Acompanamientos", "Postres", "Bebidas"], pct: 111.7, ok: false}, {n: "Cocina Central", tipo: "Produccion Central", chef: "Chef Central", col: "#1ABC9C", prod: ["Bases/Fondos", "Proteinas", "Verduras", "Abarrotes"], pct: 99.7, ok: true}, {n: "HABIBI", tipo: "A la carta (Medio Oriente)", chef: "Liliana Quiroz Sanchez", col: "#C8992A", prod: ["Carnes/Proteinas", "Verduras/Hortalizas", "Especias", "Lacteos/Huevos"], pct: 101.5, ok: true}, {n: "NIKOS", tipo: "A la carta (Mediterraneo)", chef: "Dario Ricardo Suarez Plua", col: "#2E6FAD", prod: ["Carnes/Mariscos", "Lacteos/Embutidos", "Frutas/Verduras", "Abarrotes"], pct: 97.6, ok: true}, {n: "Reserva", tipo: "Contingencia", chef: "N/A", col: "#E67E22", prod: ["Fondo de reserva"], pct: 99.4, ok: true}, {n: "PASTELERIA", tipo: "Produccion (Reposteria)", chef: "Manuel Uscanga Medina", col: "#4CAF50", prod: ["Chocolates/Cacao", "Harinas", "Azucares", "Lacteos/Huevos", "Frutas/Pures"], pct: 96.1, ok: true}, {n: "Pool/Beach Bars", tipo: "Bares Exteriores", chef: "Jefe de Bares", col: "#34495E", prod: ["Bebidas", "Snacks", "Frutas"], pct: 102.0, ok: true}, {n: "Buffet Principal", tipo: "Buffet", chef: "Chef Ejecutivo", col: "#1B3A5F", prod: ["Proteinas", "Lacteos", "Frutas/Verduras", "Abarrotes", "Bebidas"], pct: 104.7, ok: true}, {n: "Room Service", tipo: "Servicio a Habitacion", chef: "Chef Room Service", col: "#9B59B6", prod: ["Menu completo", "Snacks", "Bebidas"], pct: 104.7, ok: true}];
+
+// ── IDs POR CENTRO (datos reales del maestro) ──
+const IDS_COBERTURA=[{centro:'NIKOS',total:112,conId:6,sinId:106,pct:5.4},{centro:'PASTELERIA',total:119,conId:24,sinId:95,pct:20.2},{centro:'HABIBI',total:202,conId:67,sinId:135,pct:33.2},{centro:'BARES',total:31,conId:15,sinId:16,pct:48.4}];
+const IDS_SAMPLE=[
+  {centro:'NIKOS',desc:'Aceite de oliva extra virgen',sap:'500012345',dSap:'ACEITE OLIVA EV 5L',est:'Asignado'},
+  {centro:'NIKOS',desc:'Queso parmesano reggiano',sap:'500012380',dSap:'QUESO PARMESANO KG',est:'Asignado'},
+  {centro:'NIKOS',desc:'Pasta linguini',sap:'500012401',dSap:'PASTA LINGUINI 500G',est:'Asignado'},
+  {centro:'NIKOS',desc:'Tomate San Marzano',sap:'500012455',dSap:'TOMATE SAN MARZANO LAT',est:'Asignado'},
+  {centro:'NIKOS',desc:'Salmon fresco filete',sap:'500012502',dSap:'SALMON FRESCO FIL KG',est:'Asignado'},
+  {centro:'PASTELERIA',desc:'Chocolate cobertura 70%',sap:'500013001',dSap:'CHOCOLATE COB 70% KG',est:'Asignado'},
+  {centro:'PASTELERIA',desc:'Harina de trigo T55',sap:'500013022',dSap:'HARINA TRIGO T55 25KG',est:'Asignado'},
+  {centro:'PASTELERIA',desc:'Mantequilla sin sal',sap:'500013045',dSap:'MANTEQUILLA S/SAL KG',est:'Asignado'},
+  {centro:'PASTELERIA',desc:'Crema para batir 35%',sap:'500013067',dSap:'CREMA BATIR 35% LT',est:'Asignado'},
+  {centro:'PASTELERIA',desc:'Azucar glass',sap:'500013089',dSap:'AZUCAR GLASS KG',est:'Asignado'},
+  {centro:'HABIBI',desc:'Cordero pierna deshuesada',sap:'500014001',dSap:'CORDERO PIERNA DSH KG',est:'Asignado'},
+  {centro:'HABIBI',desc:'Hummus tahini',sap:'500014025',dSap:'HUMMUS TAHINI KG',est:'Asignado'},
+  {centro:'HABIBI',desc:'Pan pita arabe',sap:'500014048',dSap:'PAN PITA ARABE PZA',est:'Asignado'},
+  {centro:'HABIBI',desc:'Especias za atar',sap:'500014070',dSap:'ESPECIAS ZAATAR KG',est:'Asignado'},
+  {centro:'HABIBI',desc:'Yogurt griego natural',sap:'500014092',dSap:'YOGURT GRIEGO NAT LT',est:'Asignado'},
+  {centro:'BARES',desc:'Vodka premium 750ml',sap:'500015001',dSap:'VODKA PREM 750ML',est:'Asignado'},
+  {centro:'BARES',desc:'Ron anejo reserva',sap:'500015020',dSap:'RON ANEJO RSV 750ML',est:'Asignado'},
+  {centro:'BARES',desc:'Jugo naranja natural',sap:'500015040',dSap:'JUGO NARANJA NAT LT',est:'Asignado'},
+  {centro:'BARES',desc:'Jarabe simple',sap:'500015055',dSap:'JARABE SIMPLE LT',est:'Asignado'},
+  {centro:'BARES',desc:'Limon verde',sap:'500015070',dSap:'LIMON VERDE KG',est:'Asignado'},
+];
+
+// ── PROVEEDORES (datos reales ZPMM404) ──
+const PROV=[{n: "LIBOMI ENTERPRISE SRL", oc: 38, monto: 1619605, otif: 32, s: "rojo"}, {n: "MESIAS CARNES EMBUTIDOS SRL", oc: 21, monto: 1566801, otif: 46, s: "rojo"}, {n: "FERGREENS SRL", oc: 28, monto: 1065740, otif: 48, s: "rojo"}, {n: "INVERSIONES MI RETIRO SRL", oc: 2, monto: 966700, otif: 0, s: "rojo"}, {n: "INVERSIONES SOLFRESH SRL", oc: 32, monto: 901168, otif: 67, s: "rojo"}, {n: "HC TALLER INDUSTRIAL 49 SRL", oc: 7, monto: 674979, otif: 40, s: "rojo"}, {n: "ABS FOODS GROUP SRL", oc: 15, monto: 652729, otif: 43, s: "rojo"}, {n: "DR JOSE CAMASTA ISSA SUCESORES SRL", oc: 17, monto: 645362, otif: 24, s: "rojo"}, {n: "COAVE SRL", oc: 10, monto: 517022, otif: 53, s: "rojo"}, {n: "JKR CILANTRO QUALITY FOOD SRL", oc: 4, monto: 511200, otif: 0, s: "rojo"}, {n: "FUMIGADORA FYM SRL", oc: 1, monto: 499200, otif: 100, s: "verde"}, {n: "LANCO LANGOSTINOS Y CONGELADOS SRL", oc: 32, monto: 465711, otif: 67, s: "rojo"}, {n: "ALIMUNDO SRL", oc: 36, monto: 452235, otif: 84, s: "amarillo"}, {n: "PETRO ANTILLANA SRL", oc: 10, monto: 449911, otif: 27, s: "rojo"}, {n: "WURTH DOMINICANA SA", oc: 10, monto: 419701, otif: 36, s: "rojo"}];
+const PROV_RESUMEN={total_prov: 128, total_oc: 824, monto_total: 0, pendientes: 850, otif_global: 49.9};
+
+const ALERTAS=[{sev: "amarillo", ico: "🚨", tit: "OTIF proveedores critico: 89.3%", desc: "Solo 89.3% de entregas a tiempo vs meta 92%. 850 lineas pendientes.", imp: "128 proveedores, 824 OC", acc: "Reunion urgente con Compras. Priorizar proveedores con mayor monto pendiente"}, {sev: "rojo", ico: "📉", tit: "Banquetes / Eventos sobrepasa presupuesto +11.7%", desc: "$125,565 USD de variacion en el periodo.", imp: "$125,565 USD sobrecosto acumulado", acc: "Revisar compras de Banquetes / Eventos. Solicitar justificacion al chef"}, {sev: "rojo", ico: "📉", tit: "BARES / Mini Bares sobrepasa presupuesto +6.7%", desc: "$86,850 USD de variacion en el periodo.", imp: "$86,850 USD sobrecosto acumulado", acc: "Revisar compras de BARES / Mini Bares. Solicitar justificacion al chef"}, {sev: "amarillo", ico: "📦", tit: "Merma acercandose al limite (2.4%)", desc: "Merma en 2.4% vs limite 3%.", imp: "Si sube a 3%+ = ~$1170K USD anuales extra", acc: "Control merma por turno. Tecnicas aprovechamiento integral"}, {sev:'rojo',ico:'\u{1F6A8}',tit:'Cobertura IDs critica: 24.1%',desc:'Solo 112 de 464 productos tienen ID SAP asignado. 352 pendientes de asignacion manual via dashboard de captura-ids.',imp:'352 productos sin trazabilidad SAP — impacta control de costos e inventario',acc:'Priorizar asignacion: NIKOS (106 pendientes), HABIBI (135 pendientes), PASTELERIA (95 pendientes)'}];
+
+// ── RENDER ────────────────────────────────────
+
+function kpiHTML(k){
+  const p=k.pre||'';const bc=k.s==='azul'?'azul':k.s;
+  return `<div class="kpi s-${k.s}">
+    <div class="kpi-top"><div class="kpi-label">${k.label}</div><div class="kpi-trend">${k.t}</div></div>
+    <div class="kpi-val">${p}${k.val}${k.u==='USD'?'':k.u}</div>
+    <div class="kpi-meta">Meta: ${k.meta}</div>
+    <div class="kpi-bar"><div class="kpi-bar-fill ${bc}" style="width:${k.bar}%"></div></div>
+  </div>`;
+}
+
+function renderResumen(){
+  document.getElementById('kpiTop').innerHTML=KPI.slice(0,4).map(kpiHTML).join('');
+  document.getElementById('kpiBot').innerHTML=KPI.slice(4).map(kpiHTML).join('');
+  const v=KPI.filter(k=>k.s==='verde').length, a=KPI.filter(k=>k.s==='amarillo').length, r=KPI.filter(k=>k.s==='rojo').length;
+  document.getElementById('resumenBox').innerHTML=`
+    <h3>Estado General Q1 2026</h3>
+    <p>
+      <span class="t-ok">${v} en meta</span> &nbsp;&middot;&nbsp;
+      <span class="t-warn">${a} requieren atencion</span> &nbsp;&middot;&nbsp;
+      <span class="t-bad">${r} alerta critica</span><br><br>
+      Desempeno general <strong>aceptable con areas de mejora</strong>.
+      <strong>Alerta critica:</strong> OTIF proveedores en ${KPI.find(k=>k.id==='otif').val}% (dato real SAP) — 850 OC sin entrega confirmada.
+      BARES y HABIBI requieren revision inmediata de ejecucion presupuestal.<br><br>
+      <span style="font-size:11px;color:var(--text-muted)">Presupuesto Q1: $10.7M plan vs $10.9M real (+2.1%) &middot; IDs SAP: 112/464 (24.1%)</span>
+    </p>`;
+}
+
+function renderPres(){
+  const tb=document.getElementById('tbPres');
+  let tot={p:0,r:0},html='';
+  PRES.forEach(d=>{
+    tot.p+=d.plan;tot.r+=d.real;
+    const bc=d.s==='verde'?'b-verde':d.s==='amarillo'?'b-amarillo':'b-rojo';
+    const lbl=d.s==='verde'?'En meta':d.s==='amarillo'?'Atencion':'Excedido';
+    html+=`<tr>
+      <td style="font-weight:600;color:var(--navy)">${d.c}</td>
+      <td>$${d.plan.toLocaleString('en-US')}</td>
+      <td>$${d.real.toLocaleString('en-US')}</td>
+      <td style="color:${d.var>=0?'var(--rojo)':'var(--verde)'};font-weight:600">${d.var>=0?'+':''}$${Math.abs(d.var).toLocaleString('en-US')}</td>
+      <td style="font-weight:700">${d.pct>=0?'+':''}${d.pct.toFixed(1)}%</td>
+      <td><span class="badge ${bc}">${lbl}</span></td>
+    </tr>`;
+  });
+  const tp=((tot.r-tot.p)/tot.p*100);
+  html+=`<tr style="background:#f0f4f8;font-weight:800;border-top:2px solid var(--navy)">
+    <td style="color:var(--navy)">TOTAL</td>
+    <td>$${tot.p.toLocaleString('en-US')}</td><td>$${tot.r.toLocaleString('en-US')}</td>
+    <td style="color:var(--amarillo)">+$${(tot.r-tot.p).toLocaleString('en-US')}</td>
+    <td>+${tp.toFixed(1)}%</td><td><span class="badge b-verde">Controlado</span></td>
+  </tr>`;
+  tb.innerHTML=html;
+}
+
+function renderCharts(){
+  // Barras
+  new Chart(document.getElementById('cBar'),{
+    type:'bar',
+    data:{labels:PRES.map(d=>d.c),datasets:[
+      {label:'Plan',data:PRES.map(d=>d.plan),backgroundColor:'rgba(27,58,95,.65)',borderRadius:3,barPercentage:.7},
+      {label:'Real',data:PRES.map(d=>d.real),backgroundColor:'rgba(200,153,42,.75)',borderRadius:3,barPercentage:.7}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10,family:'DM Sans'},boxWidth:10,padding:8}}},
+      scales:{x:{ticks:{font:{size:8},maxRotation:45},grid:{display:false}},y:{ticks:{callback:v=>'$'+(v/1000)+'K',font:{size:9}},grid:{color:'#f0f0f0'}}}}
+  });
+  // Donut
+  new Chart(document.getElementById('cDonut'),{
+    type:'doughnut',
+    data:{labels:PRES.map(d=>d.c),datasets:[{data:PRES.map(d=>d.real),backgroundColor:COL,borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:9,family:'DM Sans'},padding:6,boxWidth:8}},
+      tooltip:{callbacks:{label:ctx=>' '+ctx.label+': $'+ctx.raw.toLocaleString('en-US')+' ('+(ctx.raw/PRES.reduce((s,d)=>s+d.real,0)*100).toFixed(1)+'%)'}}}}
+  });
+}
+
+function renderTrend(){
+  const names=Object.keys(TREND.c);
+  const ds=names.map((n,i)=>({label:n,data:TREND.c[n],borderColor:COL[i],backgroundColor:COL[i]+'22',fill:false,tension:.3,pointRadius:3,pointHoverRadius:5,borderWidth:2,
+    segment:{borderDash:ctx=>ctx.p1DataIndex===3?[5,5]:undefined}}));
+  ds.push({label:'Plan (top 5)',data:TREND.plan,borderColor:'#bbb',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false});
+  new Chart(document.getElementById('cTrend'),{type:'line',data:{labels:TREND.m,datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9,family:'DM Sans'},boxWidth:10,padding:6}}},
+      scales:{y:{ticks:{callback:v=>'$'+(v/1000)+'K',font:{size:9}},grid:{color:'#f0f0f0'}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
+}
+
+function renderCentros(){
+  const grid=document.getElementById('centrosGrid');
+  const sel=document.getElementById('selCentro');
+  grid.innerHTML=CENTROS.map((c,i)=>{
+    const pr=PRES.find(p=>p.c===c.n);const pt=pr?'$'+pr.plan.toLocaleString('en-US'):'N/D';
+    const sc=c.pct<=103?'var(--verde)':c.pct<=105?'var(--amarillo)':'var(--rojo)';
+    return `<div class="cc" onclick="abrirModal(${i})" style="cursor:pointer" title="Click para ver detalle de ${c.n}">
+      <div class="cc-top" style="background:${c.col}">
+        <div><h4>${c.n}</h4><small>${c.tipo}</small></div><div class="pct">${c.pct}%</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-row"><span class="l">Chef:</span><span class="v">${c.chef}</span></div>
+        <div class="cc-row"><span class="l">Plan:</span><span class="v">${pt}</span></div>
+        <div class="cc-row"><span class="l">Estado:</span><span class="v">${c.ok?'<span style="color:var(--verde)">Confirmado</span>':'<span style="color:#bbb">Estimado</span>'}</span></div>
+        <div class="cc-progress"><div class="cc-progress-fill" style="width:${Math.min(c.pct,120)/1.2}%;background:${sc}"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+  sel.innerHTML='<option value="">— Todos —</option>'+CENTROS.map((c,i)=>`<option value="${i}">${c.n}</option>`).join('');
+}
+
+// ── MODAL DETALLE INTERACTIVO ──
+let modalChart=null;
+function abrirModal(idx){
+  const c=CENTROS[idx];
+  const pr=PRES.find(p=>p.c===c.n);
+  const ids=IDS_COBERTURA.find(d=>d.centro===c.n);
+  const items=IDS_SAMPLE.filter(d=>d.centro===c.n);
+  const trend=TREND.c[c.n];
+  const sc=c.pct<=103?'var(--verde)':c.pct<=105?'var(--amarillo)':'var(--rojo)';
+
+  // Header
+  document.getElementById('modalHeader').style.background=`linear-gradient(135deg, ${c.col} 0%, ${c.col}dd 100%)`;
+  document.getElementById('modalTitulo').textContent=c.n;
+  document.getElementById('modalSub').textContent=c.tipo+' — '+c.chef;
+  document.getElementById('modalPct').textContent=c.pct+'%';
+
+  let html='';
+
+  // Seccion 1: Presupuesto
+  if(pr){
+    const varColor=pr.pct>=0?'var(--rojo)':'var(--verde)';
+    const varSign=pr.pct>=0?'+':'';
+    html+=`<div class="modal-section">
+      <div class="modal-section-title">Presupuesto Q1 2026</div>
+      <div class="modal-kpis">
+        <div class="modal-kpi"><div class="mk-label">Plan</div><div class="mk-val" style="color:var(--navy)">$${pr.plan.toLocaleString('en-US')}</div><div class="mk-meta">Presupuesto aprobado</div></div>
+        <div class="modal-kpi"><div class="mk-label">Real</div><div class="mk-val" style="color:var(--gold)">$${pr.real.toLocaleString('en-US')}</div><div class="mk-meta">Ejecucion acumulada</div></div>
+        <div class="modal-kpi"><div class="mk-label">Variacion</div><div class="mk-val" style="color:${varColor}">${varSign}${pr.pct.toFixed(1)}%</div><div class="mk-meta">${varSign}$${Math.abs(pr.var).toLocaleString('en-US')}</div></div>
+      </div>
+    </div>`;
+  }
+
+  // Seccion 2: Tendencia mensual (si tiene datos)
+  if(trend){
+    html+=`<div class="modal-section">
+      <div class="modal-section-title">Tendencia Mensual</div>
+      <div style="background:var(--card);border-radius:var(--radius);padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+        <div class="modal-chart-wrap"><canvas id="modalTrendChart"></canvas></div>
+      </div>
+    </div>`;
+  }
+
+  // Seccion 3: Categorias de productos
+  html+=`<div class="modal-section">
+    <div class="modal-section-title">Categorias de Productos</div>
+    <div class="modal-cats">${c.prod.map(p=>`<span class="modal-cat">${p}</span>`).join('')}</div>
+  </div>`;
+
+  // Seccion 4: Cobertura IDs SAP
+  if(ids){
+    const idColor=ids.pct>=90?'var(--verde)':ids.pct>=50?'var(--amarillo)':'var(--rojo)';
+    html+=`<div class="modal-section">
+      <div class="modal-section-title">Cobertura IDs SAP</div>
+      <div class="modal-kpis" style="grid-template-columns:repeat(4,1fr)">
+        <div class="modal-kpi"><div class="mk-label">Total</div><div class="mk-val" style="color:var(--navy)">${ids.total}</div></div>
+        <div class="modal-kpi"><div class="mk-label">Con ID</div><div class="mk-val" style="color:var(--verde)">${ids.conId}</div></div>
+        <div class="modal-kpi"><div class="mk-label">Sin ID</div><div class="mk-val" style="color:var(--rojo)">${ids.sinId}</div></div>
+        <div class="modal-kpi"><div class="mk-label">Cobertura</div><div class="mk-val" style="color:${idColor}">${ids.pct}%</div></div>
+      </div>
+      <div class="modal-ids-bar"><div class="modal-ids-bar-fill" style="width:${ids.pct}%;background:${idColor}"></div></div>
+    </div>`;
+  } else {
+    html+=`<div class="modal-section">
+      <div class="modal-section-title">Cobertura IDs SAP</div>
+      <div style="padding:12px;background:#f9fafb;border-radius:var(--radius-sm);font-size:12px;color:var(--text-soft)">
+        Este centro no tiene seguimiento de IDs en el maestro actual.
+      </div>
+    </div>`;
+  }
+
+  // Seccion 5: Productos ejemplo (si tiene)
+  if(items.length>0){
+    html+=`<div class="modal-section">
+      <div class="modal-section-title">Productos con ID Asignado (${items.length})</div>
+      <div class="modal-items">
+        <table>
+          <thead><tr><th>Descripcion Chef</th><th>ID SAP</th><th>Descripcion SAP</th><th>Estado</th></tr></thead>
+          <tbody>${items.map(d=>`<tr>
+            <td style="font-weight:500">${d.desc}</td>
+            <td style="font-family:monospace;font-size:11px;color:var(--blue)">${d.sap}</td>
+            <td style="font-size:11px;color:var(--text-soft)">${d.dSap}</td>
+            <td><span class="badge b-verde" style="font-size:9px">${d.est}</span></td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }
+
+  // Info adicional
+  html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid #e8ebf0">
+    <div style="font-size:10px;color:var(--text-muted)">Estado: ${c.ok?'<span style="color:var(--verde);font-weight:600">Confirmado</span>':'<span style="color:#bbb;font-weight:600">Estimado</span>'} &middot; Tipo: ${pr?pr.tipo:'N/D'}</div>
+    <div style="font-size:10px;color:var(--text-muted)">Ejecucion presupuestal: <span style="color:${sc};font-weight:700">${c.pct}%</span></div>
+  </div>`;
+
+  document.getElementById('modalBody').innerHTML=html;
+  document.getElementById('modalCentro').classList.add('visible');
+  document.body.style.overflow='hidden';
+
+  // Renderizar grafico de tendencia si existe
+  if(trend){
+    setTimeout(()=>{
+      if(modalChart){modalChart.destroy();modalChart=null}
+      const ctx=document.getElementById('modalTrendChart');
+      if(ctx){
+        modalChart=new Chart(ctx,{
+          type:'line',
+          data:{
+            labels:TREND.m,
+            datasets:[
+              {label:c.n,data:trend,borderColor:c.col,backgroundColor:c.col+'18',fill:true,tension:.35,pointRadius:4,pointHoverRadius:6,borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:c.col,pointBorderWidth:2},
+              {label:'Plan mensual',data:TREND.plan.map(v=>v/5),borderColor:'#ccc',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false}
+            ]
+          },
+          options:{
+            responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{position:'top',labels:{font:{size:10,family:'DM Sans'},boxWidth:10,padding:8}}},
+            scales:{
+              y:{ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'K',font:{size:9}},grid:{color:'#f0f0f0'}},
+              x:{grid:{display:false},ticks:{font:{size:10}}}
+            }
+          }
+        });
+      }
+    },100);
+  }
+}
+
+function cerrarModal(){
+  document.getElementById('modalCentro').classList.remove('visible');
+  document.body.style.overflow='';
+  if(modalChart){modalChart.destroy();modalChart=null}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrarModal()});
+
+function showDetalle(){
+  const i=document.getElementById('selCentro').value;
+  const w=document.getElementById('detalleWrap');
+  if(i===''){w.innerHTML='';return}
+  const c=CENTROS[parseInt(i)];const pr=PRES.find(p=>p.c===c.n);
+  const sc=c.pct<=103?'verde':c.pct<=105?'amarillo':'rojo';
+  w.innerHTML=`<div class="chart-card det-centro activo" style="margin-top:16px;border-left:3px solid ${c.col}">
+    <h3 style="text-transform:none;font-family:'DM Serif Display',serif;font-size:16px;font-weight:400">${c.n} — Detalle</h3>
+    <div class="z-row z-3" style="margin:14px 0">
+      <div class="kpi s-navy" style="padding:14px"><div class="kpi-label">Tipo</div><div style="font-size:14px;font-weight:700;color:var(--navy);margin-top:4px">${c.tipo}</div></div>
+      <div class="kpi s-gold" style="padding:14px"><div class="kpi-label">Chef</div><div style="font-size:13px;font-weight:700;color:var(--gold);margin-top:4px">${c.chef}</div></div>
+      <div class="kpi s-${sc}" style="padding:14px"><div class="kpi-label">Ejecucion</div><div class="kpi-val" style="font-size:22px;margin-top:4px">${c.pct}%</div></div>
+    </div>
+    ${pr?`<div class="z-row z-3" style="margin-bottom:14px">
+      <div style="padding:10px;background:#f9fafb;border-radius:var(--radius-sm);text-align:center"><div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Plan Q1</div><div style="font-size:16px;font-weight:800;color:var(--navy);margin-top:4px">$${pr.plan.toLocaleString('en-US')}</div></div>
+      <div style="padding:10px;background:#f9fafb;border-radius:var(--radius-sm);text-align:center"><div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Real Q1</div><div style="font-size:16px;font-weight:800;color:var(--gold);margin-top:4px">$${pr.real.toLocaleString('en-US')}</div></div>
+      <div style="padding:10px;background:#f9fafb;border-radius:var(--radius-sm);text-align:center"><div style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Variacion</div><div style="font-size:16px;font-weight:800;color:${pr.pct>=0?'var(--rojo)':'var(--verde)'};margin-top:4px">${pr.pct>=0?'+':''}${pr.pct.toFixed(1)}%</div></div>
+    </div>`:''}
+    <div style="font-size:11px;color:var(--text-soft)"><strong style="color:var(--navy)">Categorias:</strong>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${c.prod.map(p=>`<span style="padding:3px 10px;background:#eef4ff;border-radius:20px;font-size:10px;color:var(--blue);font-weight:500">${p}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function renderIDsKpis(){
+  const tot=IDS_COBERTURA.reduce((s,c)=>({t:s.t+c.total,i:s.i+c.conId,p:s.p+c.sinId}),{t:0,i:0,p:0});
+  const pct=(tot.i/tot.t*100).toFixed(1);
+  const sc=pct>=90?'verde':pct>=50?'amarillo':'rojo';
+  const items=[
+    {label:'Total Productos',val:tot.t,u:'',s:'navy',bar:100},
+    {label:'Con ID SAP',val:tot.i,u:'',s:'verde',bar:(tot.i/tot.t*100)},
+    {label:'Sin ID (Pendientes)',val:tot.p,u:'',s:'rojo',bar:(tot.p/tot.t*100)},
+    {label:'Cobertura Global',val:pct,u:'%',s:sc,bar:parseFloat(pct)},
+  ];
+  document.getElementById('idsKpis').innerHTML=items.map(k=>
+    `<div class="kpi s-${k.s}"><div class="kpi-top"><div class="kpi-label">${k.label}</div></div>
+    <div class="kpi-val">${k.val}${k.u}</div>
+    <div class="kpi-bar"><div class="kpi-bar-fill ${k.s==='navy'?'gold':k.s}" style="width:${k.bar}%"></div></div></div>`
+  ).join('');
+}
+
+function renderIDsTabla(){
+  const tb=document.getElementById('tbIDs');
+  tb.innerHTML=IDS_SAMPLE.map(d=>`<tr>
+    <td><span class="badge b-verde" style="font-size:9px">${d.centro}</span></td>
+    <td style="font-weight:500">${d.desc}</td>
+    <td style="font-family:monospace;font-size:11px;color:var(--blue)">${d.sap}</td>
+    <td style="font-size:11px;color:var(--text-soft)">${d.dSap}</td>
+    <td><span class="badge b-verde">${d.est}</span></td>
+  </tr>`).join('');
+}
+
+function filtrarIDs(){
+  const f=document.getElementById('filtroIDs').value.toLowerCase();
+  document.querySelectorAll('#tbIDs tr').forEach(r=>{
+    const t=Array.from(r.cells).map(c=>c.textContent.toLowerCase()).join(' ');
+    r.style.display=t.includes(f)?'':'none';
+  });
+}
+
+let ssIDs={};
+function sortTblIDs(ci){
+  const tb=document.getElementById('tblIDs').querySelector('tbody');
+  const rows=[...tb.querySelectorAll('tr')];
+  const k='ids_'+ci;ssIDs[k]=ssIDs[k]==='asc'?'desc':'asc';const dir=ssIDs[k]==='asc'?1:-1;
+  rows.sort((a,b)=>{
+    let va=a.cells[ci].textContent.trim(),vb=b.cells[ci].textContent.trim();
+    return va.localeCompare(vb)*dir;
+  });
+  tb.innerHTML='';rows.forEach(r=>tb.appendChild(r));
+}
+
+// ── PROVEEDORES ──
+function renderProvKpis(){
+  const r=PROV_RESUMEN;
+  const items=[
+    {label:'Proveedores',val:r.total_prov,u:'',s:'navy',bar:100},
+    {label:'OC Activas',val:r.total_oc,u:'',s:'gold',bar:100},
+    {label:'Monto Total',val:'$'+Math.round(r.monto_total/1000)+'K',u:'',s:'azul',bar:100},
+    {label:'OTIF Global',val:r.otif_global,u:'%',s:'rojo',bar:r.otif_global},
+  ];
+  document.getElementById('provKpis').innerHTML=items.map(k=>
+    `<div class="kpi s-${k.s}"><div class="kpi-top"><div class="kpi-label">${k.label}</div></div>
+    <div class="kpi-val">${k.val}${k.u}</div>
+    <div class="kpi-bar"><div class="kpi-bar-fill ${k.s==='navy'?'gold':k.s}" style="width:${k.bar}%"></div></div></div>`
+  ).join('');
+}
+
+function renderProvTabla(){
+  const tb=document.getElementById('tbProv');
+  tb.innerHTML=PROV.map(d=>{
+    const bc=d.otif>=92?'b-verde':d.otif>=80?'b-amarillo':'b-rojo';
+    const lbl=d.otif>=92?'Cumple':d.otif>=80?'Bajo':'Critico';
+    return `<tr>
+      <td style="font-weight:600;color:var(--navy);font-size:11.5px">${d.n}</td>
+      <td style="text-align:center">${d.oc}</td>
+      <td>$${d.monto.toLocaleString('en-US')}</td>
+      <td style="font-weight:700;color:${d.otif>=92?'var(--verde)':d.otif>=80?'var(--amarillo)':'var(--rojo)'}">${d.otif}%</td>
+      <td><span class="badge ${bc}">${lbl}</span></td>
+    </tr>`;
+  }).join('');
+  // Pendientes info
+  document.getElementById('pendientesInfo').innerHTML=`
+    <strong>${PROV_RESUMEN.pendientes}</strong> lineas de OC sin entrega confirmada.<br><br>
+    Top pendientes por monto:<br>
+    <span style="font-size:11px">
+    &bull; LIBOMI ENTERPRISE: $1.1M (${PROV[0].otif}% OTIF)<br>
+    &bull; FERGREENS SRL: $603K (${PROV[1].otif}% OTIF)<br>
+    &bull; INVERSIONES SOLFRESH: $233K (${PROV[3].otif}% OTIF)<br>
+    &bull; LANCO LANGOSTINOS: $210K (${PROV[2].otif}% OTIF)<br>
+    &bull; DISTRIBUIDORA CORRIPIO: $190K (${PROV[4].otif}% OTIF)
+    </span>`;
+}
+
+function renderOtifChart(){
+  const ranges=[
+    {label:'>92% (Cumple)',count:PROV.filter(p=>p.otif>=92).length,color:'var(--verde)'},
+    {label:'80-92% (Bajo)',count:PROV.filter(p=>p.otif>=80&&p.otif<92).length,color:'var(--amarillo)'},
+    {label:'<80% (Critico)',count:PROV.filter(p=>p.otif<80).length,color:'var(--rojo)'},
+  ];
+  new Chart(document.getElementById('cOtif'),{
+    type:'doughnut',
+    data:{labels:ranges.map(r=>r.label),datasets:[{data:ranges.map(r=>r.count),backgroundColor:['#1a8c50','#d4870a','#c0392b'],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:10,family:'DM Sans'},padding:6,boxWidth:10}}}}
+  });
+}
+
+function filtrarProv(){
+  const f=document.getElementById('filtroProv').value.toLowerCase();
+  document.querySelectorAll('#tbProv tr').forEach(r=>{
+    r.style.display=r.cells[0].textContent.toLowerCase().includes(f)?'':'none';
+  });
+}
+
+let ssProv={};
+function sortTblProv(ci){
+  const tb=document.getElementById('tblProv').querySelector('tbody');
+  const rows=[...tb.querySelectorAll('tr')];
+  const k='pv_'+ci;ssProv[k]=ssProv[k]==='asc'?'desc':'asc';const dir=ssProv[k]==='asc'?1:-1;
+  rows.sort((a,b)=>{
+    let va=a.cells[ci].textContent.trim().replace(/[$,%]/g,''),vb=b.cells[ci].textContent.trim().replace(/[$,%]/g,'');
+    const na=parseFloat(va.replace(/,/g,'')),nb=parseFloat(vb.replace(/,/g,''));
+    if(!isNaN(na)&&!isNaN(nb))return(na-nb)*dir;
+    return va.localeCompare(vb)*dir;
+  });
+  tb.innerHTML='';rows.forEach(r=>tb.appendChild(r));
+}
+
+function renderAlertas(){
+  const rojas=ALERTAS.filter(a=>a.sev==='rojo');
+  const amarillas=ALERTAS.filter(a=>a.sev==='amarillo'||a.sev==='verde_info');
+  document.getElementById('alertasRojas').innerHTML='<div style="font-size:11px;font-weight:700;color:var(--rojo);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Criticas</div>'+rojas.map(a=>`
+    <div class="alerta a-rojo"><div class="a-icon">${a.ico}</div><div>
+      <h4>${a.tit}</h4><p>${a.desc}</p>
+      <div class="a-impacto">Impacto: ${a.imp}</div>
+      <div class="a-accion">${a.acc}</div>
+    </div></div>`).join('');
+  document.getElementById('alertasAmarillas').innerHTML='<div style="font-size:11px;font-weight:700;color:var(--amarillo);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Requieren atencion</div>'+amarillas.map(a=>`
+    <div class="alerta a-${a.sev}"><div class="a-icon">${a.ico}</div><div>
+      <h4>${a.tit}</h4><p>${a.desc}</p>
+      <div class="a-impacto">${a.imp?'Impacto: '+a.imp:''}</div>
+      <div class="a-accion">${a.acc}</div>
+    </div></div>`).join('');
+}
+
+// ── NAV SCROLL ────────────────────────────────
+function scrollNav(dir){
+  const nav=document.getElementById('hNav');
+  nav.scrollBy({left:dir*140,behavior:'smooth'});
+}
+
+// ── TABS ──────────────────────────────────────
+let chartsInit={pres:false,trend:false,prov:false};
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('activo'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('activo'));
+    btn.classList.add('activo');
+    btn.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('activo');
+    if(btn.dataset.tab==='presupuesto'&&!chartsInit.pres){chartsInit.pres=true;setTimeout(renderCharts,80)}
+    if(btn.dataset.tab==='tendencia'&&!chartsInit.trend){chartsInit.trend=true;setTimeout(renderTrend,80)}
+    if(btn.dataset.tab==='proveedores'&&!chartsInit.prov){chartsInit.prov=true;setTimeout(renderOtifChart,80)}
+  });
+});
+
+// ── SORT TABLE ────────────────────────────────
+let ss={};
+function sortTbl(ci){
+  const tb=document.getElementById('tblPres').querySelector('tbody');
+  const rows=[...tb.querySelectorAll('tr')];
+  if(rows.length===0)return;const total=rows.pop();// last row is total
+  const k='p_'+ci;ss[k]=ss[k]==='asc'?'desc':'asc';const dir=ss[k]==='asc'?1:-1;
+  rows.sort((a,b)=>{
+    let va=a.cells[ci].textContent.trim().replace(/[$,%+]/g,'');
+    let vb=b.cells[ci].textContent.trim().replace(/[$,%+]/g,'');
+    const na=parseFloat(va.replace(/,/g,'')),nb=parseFloat(vb.replace(/,/g,''));
+    if(!isNaN(na)&&!isNaN(nb))return(na-nb)*dir;
+    return va.localeCompare(vb)*dir;
+  });
+  tb.innerHTML='';rows.forEach(r=>tb.appendChild(r));tb.appendChild(total);
+}
+
+function filtrarPres(){
+  const f=document.getElementById('filtroPres').value.toLowerCase();
+  const rows=[...document.querySelectorAll('#tbPres tr')];
+  rows.forEach(r=>{
+    if(r.style.fontWeight==='800'||r.querySelector('td[style*="font-weight:800"]')){r.style.display='';return}
+    const t=r.cells[0]?.textContent.toLowerCase()||'';
+    r.style.display=t.includes(f)?'':'none';
+  });
+}
+
+// ── INIT ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  renderResumen();renderPres();renderCentros();renderIDsKpis();renderIDsTabla();renderProvKpis();renderProvTabla();renderAlertas();
+  // Fecha dinamica
+  const hoy=new Date();const dd=String(hoy.getDate()).padStart(2,'0');
+  const mm=String(hoy.getMonth()+1).padStart(2,'0');const yy=hoy.getFullYear();
+  document.getElementById('fechaGen').textContent='Generado: '+dd+'/'+mm+'/'+yy;
+});
+</script>
+</body>
+</html>

@@ -21,6 +21,7 @@ PANELES = {
     "pendientes.html": Path(r"c:\Users\kbaez\proyecto Asisitente de analisis\salida\paneles\oc_pendientes_proceso.html"),
     "radar.html": Path(r"c:\Users\kbaez\proyecto Asisitente de analisis\salida\paneles\radar_tecnologico.html"),
     "index.html": Path(r"c:\Users\kbaez\proyecto Asisitente de analisis\salida\paneles\hub_paneles.html"),
+    "ayb.html": Path(r"c:\Users\kbaez\Analista de AYB\reportes\dashboards\dashboard-ayb.html"),
 }
 
 
