@@ -372,7 +372,7 @@ td.num {
 
 <!-- FOOTER -->
 <div class="footer">
-    Generado: 30/03/2026 15:17 |
+    Generado: 30/03/2026 18:02 |
     Datos embebidos: 2,655 lineas |
     Asistente de Analisis — Moon Palace The Grand Punta Cana
 </div>
@@ -403,13 +403,31 @@ function filtrarPorFecha() {
     filtrarTabla();
 }
 
-// ── CAMBIAR DIA ──
+// ── CAMBIAR DIA (salta solo a fechas con datos) ──
 function cambiarDia(delta) {
     const sel = document.getElementById('fechaSelector');
-    const fechaActual = new Date(sel.value + 'T12:00:00');
-    fechaActual.setDate(fechaActual.getDate() + delta);
-    sel.value = fechaActual.toISOString().split('T')[0];
-    filtrarPorFecha();
+    const actual = sel.value;
+    const idx = FECHAS_CON_DATOS.indexOf(actual);
+
+    let nuevo;
+    if (idx === -1) {
+        // Fecha actual no esta en el array — buscar la mas cercana
+        if (delta > 0) {
+            nuevo = FECHAS_CON_DATOS.find(f => f > actual);
+        } else {
+            nuevo = [...FECHAS_CON_DATOS].reverse().find(f => f < actual);
+        }
+    } else {
+        const nuevoIdx = idx + delta;
+        if (nuevoIdx >= 0 && nuevoIdx < FECHAS_CON_DATOS.length) {
+            nuevo = FECHAS_CON_DATOS[nuevoIdx];
+        }
+    }
+
+    if (nuevo) {
+        sel.value = nuevo;
+        filtrarPorFecha();
+    }
 }
 
 // ── KPIs ──
