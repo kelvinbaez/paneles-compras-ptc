@@ -278,6 +278,65 @@ tbody td { padding:11px 14px; vertical-align:middle; }
 .tab-content    { display:none; }
 .tab-content.activo { display:block; }
 
+/* PRESENTACIONES */
+.pres-stats-bar {
+  display:flex; gap:20px; padding:16px 40px; background:white;
+  border-bottom:1px solid #e0e0e0; flex-wrap:wrap;
+}
+.pres-stat { background:#f8f9fa; border-radius:8px; padding:12px 20px; border-left:4px solid #1B3A5F; }
+.pres-n { font-size:22px; font-weight:800; color:#1B3A5F; }
+.pres-l { font-size:11px; color:#888; margin-top:2px; }
+.pres-filtros {
+  padding:12px 40px; background:#f8fafc; border-bottom:1px solid #eee;
+  display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+}
+.pres-filtros label { font-size:11px; font-weight:700; color:#8a96a3; text-transform:uppercase; }
+.pres-filtros select, .pres-filtros input {
+  padding:8px 14px; border:1px solid #dde4ee; border-radius:7px; font-size:13px;
+}
+.pres-filtros input { width:300px; }
+.pres-leyenda {
+  display:flex; gap:20px; padding:8px 40px; font-size:11px; color:#666;
+}
+.pres-leyenda span { display:flex; align-items:center; gap:4px; }
+.pres-dot { width:14px; height:14px; border-radius:3px; display:inline-block; }
+.pres-body { padding:16px 40px; }
+.pres-seccion { margin-bottom:24px; }
+.pres-hdr {
+  background:white; padding:14px 20px; border-radius:10px 10px 0 0;
+  border-left:5px solid #1B3A5F; display:flex; align-items:center;
+  justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,.04);
+}
+.pres-hdr h3 { font-size:15px; font-weight:800; }
+.pres-tabla {
+  width:100%; border-collapse:collapse; font-size:13px;
+  background:white; box-shadow:0 2px 8px rgba(0,0,0,.06);
+  border-radius:0 0 10px 10px; overflow:hidden;
+}
+.pres-tabla thead th {
+  background:#f8f9fa; padding:10px 14px; text-align:left;
+  font-size:11px; font-weight:700; color:#666; text-transform:uppercase;
+  border-bottom:2px solid #e0e0e0;
+}
+.pres-tabla tbody td {
+  padding:10px 14px; border-bottom:1px solid #f0f0f0; vertical-align:top;
+}
+.pres-tabla tbody tr:hover { background:#f8fbff; }
+.pres-chef { font-weight:600; color:#1a2535; }
+.pres-col { padding:6px 10px !important; }
+.pres-item {
+  display:flex; align-items:center; gap:10px;
+  padding:5px 10px; margin:2px 0; border-radius:5px;
+  background:#f8f9fa; border:1px solid #eee; font-size:12px;
+}
+.pres-item:hover { background:#eef4ff; border-color:#c0d4f0; }
+.pres-item.pres-actual { background:#e8f5e9; border-color:#81c784; font-weight:600; }
+.pres-mid {
+  font-family:Consolas,monospace; font-weight:700; color:#1B3A5F;
+  font-size:12px; min-width:75px;
+}
+.pres-mdesc { flex:1; color:#444; font-size:12px; }
+
 /* CATALOGO */
 .cat-toolbar {
   padding:18px 40px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
@@ -573,7 +632,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 31/03/2026 16:01
+    Generado: 31/03/2026 17:45
     <div class="header-excel-ts">Excel: 31/03/2026 16:01</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -583,6 +642,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 <div class="tab-nav">
   <button class="tab-btn activo" onclick="cambiarTab('dashboard', this)">Panel de Control</button>
   <button class="tab-btn"       onclick="cambiarTab('catalogo',  this)">Catalogo de Productos</button>
+  <button class="tab-btn"       onclick="cambiarTab('presentaciones', this)">Presentaciones</button>
 </div>
 
 <div id="tab-dashboard" class="tab-content activo">
@@ -1291,7 +1351,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 31/03/2026 16:01
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 31/03/2026 17:45
 </div>
 
 </div><!-- /tab-dashboard -->
@@ -1432,6 +1492,39 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   </div>
 
 </div><!-- /tab-catalogo -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB PRESENTACIONES                                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="tab-presentaciones" class="tab-content">
+
+    <div class="pres-stats-bar">
+      <div class="pres-stat"><div class="pres-n">0</div><div class="pres-l">Centros</div></div>
+      <div class="pres-stat"><div class="pres-n">0</div><div class="pres-l">Productos con opciones</div></div>
+      <div class="pres-stat"><div class="pres-n">0</div><div class="pres-l">Familias con 2+ pres.</div></div>
+      <div class="pres-stat"><div class="pres-n">0</div><div class="pres-l">Materiales ZPMM006</div></div>
+    </div>
+    <div class="pres-filtros">
+      <label>Centro:</label>
+      <select id="pres-f-centro" onchange="presFiltrarCentro()">
+        <option value="">Todos</option>
+        <option value="BARES">BARES</option><option value="CARVAO">CARVAO</option><option value="CASA MACAO">CASA MACAO</option><option value="HABIBI">HABIBI</option><option value="JADE">JADE</option><option value="LA CANTINA">LA CANTINA</option><option value="NIKOS">NIKOS</option><option value="PASTELERIA">PASTELERIA</option><option value="TAVOLA">TAVOLA</option>
+      </select>
+      <label>Buscar:</label>
+      <input type="text" id="pres-buscar" placeholder="Ej: ajo, queso, pollo..." oninput="presFiltrarTexto()">
+    </div>
+    <div class="pres-leyenda">
+      <span><span class="pres-dot" style="background:#e8f5e9;border:2px solid #81c784"></span> Presentacion asignada al centro</span>
+      <span><span class="pres-dot" style="background:#f8f9fa;border:1px solid #eee"></span> Otra presentacion disponible en SAP</span>
+    </div>
+    <div class="pres-body">
+      
+    </div>
+    <div style="text-align:center;font-size:11px;color:#aaa;padding:12px">
+      Fuente: ZPMM006 Datos Maestros SAP — Solo productos registrados en la base de datos
+    </div>
+    
+</div><!-- /tab-presentaciones -->
 
 <script>
 // ── DATOS ──────────────────────────────────────────────────
@@ -1867,6 +1960,21 @@ function cambiarTab(tab, btn) {
 }
 
 // ══════════════════════════════════════════════════════════
+// PRESENTACIONES
+function presFiltrarCentro() {
+  const sel = document.getElementById('pres-f-centro').value;
+  document.querySelectorAll('.pres-seccion').forEach(s => {
+    s.style.display = (!sel || s.dataset.pcentro === sel) ? '' : 'none';
+  });
+}
+function presFiltrarTexto() {
+  const txt = document.getElementById('pres-buscar').value.toLowerCase();
+  document.querySelectorAll('.pres-tabla tbody tr').forEach(tr => {
+    tr.style.display = (!txt || tr.textContent.toLowerCase().includes(txt)) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════════════
 // CATALOGO
 // ══════════════════════════════════════════════════════════
 let catRestActivo = 'TODOS';
@@ -2163,7 +2271,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 31/03/2026 16:01
+    Generado: 31/03/2026 17:45
   </div>
 </div>
 
@@ -2172,7 +2280,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 31/03/2026 16:01 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 31/03/2026 17:45 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>

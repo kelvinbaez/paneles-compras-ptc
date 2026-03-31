@@ -278,6 +278,65 @@ tbody td { padding:11px 14px; vertical-align:middle; }
 .tab-content    { display:none; }
 .tab-content.activo { display:block; }
 
+/* PRESENTACIONES */
+.pres-stats-bar {
+  display:flex; gap:20px; padding:16px 40px; background:white;
+  border-bottom:1px solid #e0e0e0; flex-wrap:wrap;
+}
+.pres-stat { background:#f8f9fa; border-radius:8px; padding:12px 20px; border-left:4px solid #1B3A5F; }
+.pres-n { font-size:22px; font-weight:800; color:#1B3A5F; }
+.pres-l { font-size:11px; color:#888; margin-top:2px; }
+.pres-filtros {
+  padding:12px 40px; background:#f8fafc; border-bottom:1px solid #eee;
+  display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+}
+.pres-filtros label { font-size:11px; font-weight:700; color:#8a96a3; text-transform:uppercase; }
+.pres-filtros select, .pres-filtros input {
+  padding:8px 14px; border:1px solid #dde4ee; border-radius:7px; font-size:13px;
+}
+.pres-filtros input { width:300px; }
+.pres-leyenda {
+  display:flex; gap:20px; padding:8px 40px; font-size:11px; color:#666;
+}
+.pres-leyenda span { display:flex; align-items:center; gap:4px; }
+.pres-dot { width:14px; height:14px; border-radius:3px; display:inline-block; }
+.pres-body { padding:16px 40px; }
+.pres-seccion { margin-bottom:24px; }
+.pres-hdr {
+  background:white; padding:14px 20px; border-radius:10px 10px 0 0;
+  border-left:5px solid #1B3A5F; display:flex; align-items:center;
+  justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,.04);
+}
+.pres-hdr h3 { font-size:15px; font-weight:800; }
+.pres-tabla {
+  width:100%; border-collapse:collapse; font-size:13px;
+  background:white; box-shadow:0 2px 8px rgba(0,0,0,.06);
+  border-radius:0 0 10px 10px; overflow:hidden;
+}
+.pres-tabla thead th {
+  background:#f8f9fa; padding:10px 14px; text-align:left;
+  font-size:11px; font-weight:700; color:#666; text-transform:uppercase;
+  border-bottom:2px solid #e0e0e0;
+}
+.pres-tabla tbody td {
+  padding:10px 14px; border-bottom:1px solid #f0f0f0; vertical-align:top;
+}
+.pres-tabla tbody tr:hover { background:#f8fbff; }
+.pres-chef { font-weight:600; color:#1a2535; }
+.pres-col { padding:6px 10px !important; }
+.pres-item {
+  display:flex; align-items:center; gap:10px;
+  padding:5px 10px; margin:2px 0; border-radius:5px;
+  background:#f8f9fa; border:1px solid #eee; font-size:12px;
+}
+.pres-item:hover { background:#eef4ff; border-color:#c0d4f0; }
+.pres-item.pres-actual { background:#e8f5e9; border-color:#81c784; font-weight:600; }
+.pres-mid {
+  font-family:Consolas,monospace; font-weight:700; color:#1B3A5F;
+  font-size:12px; min-width:75px;
+}
+.pres-mdesc { flex:1; color:#444; font-size:12px; }
+
 /* CATALOGO */
 .cat-toolbar {
   padding:18px 40px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
@@ -573,7 +632,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 31/03/2026 16:01
+    Generado: 31/03/2026 17:45
     <div class="header-excel-ts">Excel: 31/03/2026 16:01</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -583,6 +642,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 <div class="tab-nav">
   <button class="tab-btn activo" onclick="cambiarTab('dashboard', this)">Panel de Control</button>
   <button class="tab-btn"       onclick="cambiarTab('catalogo',  this)">Catalogo de Productos</button>
+  <button class="tab-btn"       onclick="cambiarTab('presentaciones', this)">Presentaciones</button>
 </div>
 
 <div id="tab-dashboard" class="tab-content activo">
@@ -1340,7 +1400,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 31/03/2026 16:01
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 31/03/2026 17:45
 </div>
 
 </div><!-- /tab-dashboard -->
@@ -1481,6 +1541,165 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   </div>
 
 </div><!-- /tab-catalogo -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- TAB PRESENTACIONES                                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="tab-presentaciones" class="tab-content">
+
+    <div class="pres-stats-bar">
+      <div class="pres-stat"><div class="pres-n">9</div><div class="pres-l">Centros</div></div>
+      <div class="pres-stat"><div class="pres-n">82</div><div class="pres-l">Productos con opciones</div></div>
+      <div class="pres-stat"><div class="pres-n">551</div><div class="pres-l">Familias con 2+ pres.</div></div>
+      <div class="pres-stat"><div class="pres-n">4392</div><div class="pres-l">Materiales ZPMM006</div></div>
+    </div>
+    <div class="pres-filtros">
+      <label>Centro:</label>
+      <select id="pres-f-centro" onchange="presFiltrarCentro()">
+        <option value="">Todos</option>
+        <option value="BARES">BARES</option><option value="CARVAO">CARVAO</option><option value="CASA MACAO">CASA MACAO</option><option value="HABIBI">HABIBI</option><option value="JADE">JADE</option><option value="LA CANTINA">LA CANTINA</option><option value="NIKOS">NIKOS</option><option value="PASTELERIA">PASTELERIA</option><option value="TAVOLA">TAVOLA</option>
+      </select>
+      <label>Buscar:</label>
+      <input type="text" id="pres-buscar" placeholder="Ej: ajo, queso, pollo..." oninput="presFiltrarTexto()">
+    </div>
+    <div class="pres-leyenda">
+      <span><span class="pres-dot" style="background:#e8f5e9;border:2px solid #81c784"></span> Presentacion asignada al centro</span>
+      <span><span class="pres-dot" style="background:#f8f9fa;border:1px solid #eee"></span> Otra presentacion disponible en SAP</span>
+    </div>
+    <div class="pres-body">
+      
+        <div class="pres-seccion" data-pcentro="BARES">
+          <div class="pres-hdr" style="border-left-color:#722F37">
+            <h3 style="color:#722F37">MINI BARES</h3>
+            <span style="font-size:12px;color:#888">33 productos | 21 con ID | 4 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Piña de 2 a 3 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1014994</span><span class="pres-mdesc">Piña</span></div><div class="pres-item pres-actual"><span class="pres-mid">1004812</span><span class="pres-mdesc">Piña de 2 a 3 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Flor de jamaica</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000846</span><span class="pres-mdesc">Flor de jamaica &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015003</span><span class="pres-mdesc">Flor de jamaica 1 lb</span></div></td></tr><tr><td class="pres-chef">Crema de Coco</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015123</span><span class="pres-mdesc">Crema de coco 2.72 kg con 6 pzas</span></div><div class="pres-item pres-actual"><span class="pres-mid">1004116</span><span class="pres-mdesc">Crema de coco con 12 pzas de 1 lt &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Pistachios</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015404</span><span class="pres-mdesc">Pistache pelado premium 2.27 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015405</span><span class="pres-mdesc">Pistache pelado premium 9.09 kg</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="CARVAO">
+          <div class="pres-hdr" style="border-left-color:#B8860B">
+            <h3 style="color:#B8860B">CARVAO</h3>
+            <span style="font-size:12px;color:#888">347 productos | 71 con ID | 10 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Atun en agua de 1.88 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015101</span><span class="pres-mdesc">Atun en agua 6/1880 gr</span></div><div class="pres-item pres-actual"><span class="pres-mid">1000305</span><span class="pres-mdesc">Atun en agua de 1.88 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Crema de coco con 12 pzas de 1 lt</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015123</span><span class="pres-mdesc">Crema de coco 2.72 kg con 6 pzas</span></div><div class="pres-item pres-actual"><span class="pres-mid">1004116</span><span class="pres-mdesc">Crema de coco con 12 pzas de 1 lt &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Jarabe sabor maple de 3.785 lt</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015157</span><span class="pres-mdesc">Jarabe sabor maple 4 pza de 3.785 lt</span></div><div class="pres-item pres-actual"><span class="pres-mid">1000500</span><span class="pres-mdesc">Jarabe sabor maple de 3.785 lt &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Lenteja</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1004275</span><span class="pres-mdesc">Lenteja &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015235</span><span class="pres-mdesc">Lenteja 45.45 kg</span></div></td></tr><tr><td class="pres-chef">Champi#on de 4 a 5 cm</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000806</span><span class="pres-mdesc">Champiñon de 4 a 5 cm &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014997</span><span class="pres-mdesc">Champiñon de 4 a 5 cm</span></div></td></tr><tr><td class="pres-chef">Chile guajillo</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000816</span><span class="pres-mdesc">Chile guajillo &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015507</span><span class="pres-mdesc">Chile guajillo 5 pz 453 gr</span></div></td></tr><tr><td class="pres-chef">Espinaca</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000844</span><span class="pres-mdesc">Espinaca &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014998</span><span class="pres-mdesc">Espinaca</span></div></td></tr><tr><td class="pres-chef">Espinaca baby de 454 gr</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1001495</span><span class="pres-mdesc">Espinaca baby</span></div><div class="pres-item pres-actual"><span class="pres-mid">1006728</span><span class="pres-mdesc">Espinaca baby de 454 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Flor de jamaica</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000846</span><span class="pres-mdesc">Flor de jamaica &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015003</span><span class="pres-mdesc">Flor de jamaica 1 lb</span></div></td></tr><tr><td class="pres-chef">Laurel</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1004802</span><span class="pres-mdesc">Laurel &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015006</span><span class="pres-mdesc">Laurel 1 lb</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="CASA MACAO">
+          <div class="pres-hdr" style="border-left-color:#6B3FA0">
+            <h3 style="color:#6B3FA0">CASA MACAO</h3>
+            <span style="font-size:12px;color:#888">529 productos | 111 con ID | 10 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Chile guajillo</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000816</span><span class="pres-mdesc">Chile guajillo &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015507</span><span class="pres-mdesc">Chile guajillo 5 pz 453 gr</span></div></td></tr><tr><td class="pres-chef">Flor de jamaica</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000846</span><span class="pres-mdesc">Flor de jamaica &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015003</span><span class="pres-mdesc">Flor de jamaica 1 lb</span></div></td></tr><tr><td class="pres-chef">Laurel</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1004802</span><span class="pres-mdesc">Laurel &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015006</span><span class="pres-mdesc">Laurel 1 lb</span></div></td></tr><tr><td class="pres-chef">Achiote 25 pza de 906 gr</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015252</span><span class="pres-mdesc">Achiote 25 pza de 906 gr &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015253</span><span class="pres-mdesc">Achiote 50 pza de  gr 453</span></div></td></tr><tr><td class="pres-chef">Lenteja</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1004275</span><span class="pres-mdesc">Lenteja &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015235</span><span class="pres-mdesc">Lenteja 45.45 kg</span></div></td></tr><tr><td class="pres-chef">Queso para freir barra 2.26 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015312</span><span class="pres-mdesc">Queso de freir barra kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015000</span><span class="pres-mdesc">Queso para freir barra 2.26 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Mantequilla block sin sal 11.36 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015519</span><span class="pres-mdesc">Mantequilla block con sal 11.36 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015518</span><span class="pres-mdesc">Mantequilla block sin sal 11.36 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Champiñon de 4 a 5 cm</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000806</span><span class="pres-mdesc">Champiñon de 4 a 5 cm &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014997</span><span class="pres-mdesc">Champiñon de 4 a 5 cm</span></div></td></tr><tr><td class="pres-chef">Espinaca</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000844</span><span class="pres-mdesc">Espinaca &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014998</span><span class="pres-mdesc">Espinaca</span></div></td></tr><tr><td class="pres-chef">Espinaca baby de 454 gr</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1001495</span><span class="pres-mdesc">Espinaca baby</span></div><div class="pres-item pres-actual"><span class="pres-mid">1006728</span><span class="pres-mdesc">Espinaca baby de 454 gr &larr; asignado</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="HABIBI">
+          <div class="pres-hdr" style="border-left-color:#375623">
+            <h3 style="color:#375623">HABIBI</h3>
+            <span style="font-size:12px;color:#888">243 productos | 155 con ID | 19 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Almendra fileteada de 1 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015356</span><span class="pres-mdesc">Almendra fileteada de 10 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015355</span><span class="pres-mdesc">Almendra fileteada de 2.27 kg</span></div></td></tr><tr><td class="pres-chef">Almendra limpia entera</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1003076</span><span class="pres-mdesc">Almendra entera 5 lb &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015468</span><span class="pres-mdesc">Almendra entera de 12.5 kg</span></div></td></tr><tr><td class="pres-chef">Champiñon de 4 a 5 cm</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000806</span><span class="pres-mdesc">Champiñon de 4 a 5 cm &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014997</span><span class="pres-mdesc">Champiñon de 4 a 5 cm</span></div></td></tr><tr><td class="pres-chef">Chile guajillo</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000816</span><span class="pres-mdesc">Chile guajillo &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015507</span><span class="pres-mdesc">Chile guajillo 5 pz 453 gr</span></div></td></tr><tr><td class="pres-chef">Espinaca</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000844</span><span class="pres-mdesc">Espinaca &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014998</span><span class="pres-mdesc">Espinaca</span></div></td></tr><tr><td class="pres-chef">Espinaca baby de 454 gr</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1001495</span><span class="pres-mdesc">Espinaca baby</span></div><div class="pres-item pres-actual"><span class="pres-mid">1006728</span><span class="pres-mdesc">Espinaca baby de 454 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Fecula de maiz de 25 kg</td><td style="text-align:center;color:#888;font-weight:700">3</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015044</span><span class="pres-mdesc">Fecula de maiz 4 lb</span></div><div class="pres-item "><span class="pres-mid">1015393</span><span class="pres-mdesc">Fecula de maiz de 2.27 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015392</span><span class="pres-mdesc">Fecula de maiz de 5 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Harina de trigo c/fuerza de 23 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015396</span><span class="pres-mdesc">Harina de trigo fuerte 45.45 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015397</span><span class="pres-mdesc">Harina de trigo fuerte 54.54 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Harina de trigo oro verde de 20 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1014949</span><span class="pres-mdesc">Harina trigo saco 45.35 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1014950</span><span class="pres-mdesc">Harina trigo saco 54.43 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Laurel</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1004802</span><span class="pres-mdesc">Laurel &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015006</span><span class="pres-mdesc">Laurel 1 lb</span></div></td></tr><tr><td class="pres-chef">Mayonesa espesa con 13 kilos</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1014953</span><span class="pres-mdesc">Mayonesa estandar 1 gl 3.17kg  4/1</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015150</span><span class="pres-mdesc">Mayonesa estandar 4 pza 1 gl 3.17kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Mostaza dijon Alancient conn grano</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015057</span><span class="pres-mdesc">Mostaza 3 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015056</span><span class="pres-mdesc">Mostaza 4 X 3 kg</span></div></td></tr><tr><td class="pres-chef">PASTA DE tomate de 2.90 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015151</span><span class="pres-mdesc">Pasta de tomate 6 pza de 3.15 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015020</span><span class="pres-mdesc">Pasta de tomate de 3.15 kg</span></div></td></tr><tr><td class="pres-chef">Pasta tahini de ajonjoli c/18 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015417</span><span class="pres-mdesc">Pasta tahini de ajonjoli 17 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015419</span><span class="pres-mdesc">Pasta tahini de ajonjoli 453 gr</span></div></td></tr><tr><td class="pres-chef">Pi#on de 1 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015423</span><span class="pres-mdesc">pinones 11.36 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015422</span><span class="pres-mdesc">pinones 453 gr</span></div></td></tr><tr><td class="pres-chef">Pistache pelado premium de 1 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015404</span><span class="pres-mdesc">Pistache pelado premium 2.27 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015405</span><span class="pres-mdesc">Pistache pelado premium 9.09 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Piña</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1014994</span><span class="pres-mdesc">Piña &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1004812</span><span class="pres-mdesc">Piña de 2 a 3 kg</span></div></td></tr><tr><td class="pres-chef">Sal fina de 1 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015155</span><span class="pres-mdesc">Sal fina 4 pza de 10 lb &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015009</span><span class="pres-mdesc">Sal fina de 10 lb</span></div></td></tr><tr><td class="pres-chef">Mantequilla block sin sal 11.36 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015519</span><span class="pres-mdesc">Mantequilla block con sal 11.36 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015518</span><span class="pres-mdesc">Mantequilla block sin sal 11.36 kg &larr; asignado</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="JADE">
+          <div class="pres-hdr" style="border-left-color:#2E8B57">
+            <h3 style="color:#2E8B57">JADE</h3>
+            <span style="font-size:12px;color:#888">185 productos | 38 con ID | 4 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Aceite de ajonjoli de 3.78 lt</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1002740</span><span class="pres-mdesc">Aceite de ajonjoli de 3.78 lt &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015376</span><span class="pres-mdesc">Aceite de ajonjoli de 3.78 lt</span></div></td></tr><tr><td class="pres-chef">Crema de coco con 12 pzas de 1 lt</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015123</span><span class="pres-mdesc">Crema de coco 2.72 kg con 6 pzas</span></div><div class="pres-item pres-actual"><span class="pres-mid">1004116</span><span class="pres-mdesc">Crema de coco con 12 pzas de 1 lt &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Champiñon de 4 a 5 cm</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000806</span><span class="pres-mdesc">Champiñon de 4 a 5 cm &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014997</span><span class="pres-mdesc">Champiñon de 4 a 5 cm</span></div></td></tr><tr><td class="pres-chef">Espinaca</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000844</span><span class="pres-mdesc">Espinaca &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014998</span><span class="pres-mdesc">Espinaca</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="LA CANTINA">
+          <div class="pres-hdr" style="border-left-color:#CC5500">
+            <h3 style="color:#CC5500">LA CANTINA</h3>
+            <span style="font-size:12px;color:#888">143 productos | 49 con ID | 4 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Chile guajillo</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000816</span><span class="pres-mdesc">Chile guajillo &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015507</span><span class="pres-mdesc">Chile guajillo 5 pz 453 gr</span></div></td></tr><tr><td class="pres-chef">Espinaca</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000844</span><span class="pres-mdesc">Espinaca &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014998</span><span class="pres-mdesc">Espinaca</span></div></td></tr><tr><td class="pres-chef">Espinaca baby de 454 gr</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1001495</span><span class="pres-mdesc">Espinaca baby</span></div><div class="pres-item pres-actual"><span class="pres-mid">1006728</span><span class="pres-mdesc">Espinaca baby de 454 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Piña</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1014994</span><span class="pres-mdesc">Piña</span></div><div class="pres-item pres-actual"><span class="pres-mid">1004812</span><span class="pres-mdesc">Piña de 2 a 3 kg &larr; asignado</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="NIKOS">
+          <div class="pres-hdr" style="border-left-color:#1B3A5F">
+            <h3 style="color:#1B3A5F">NIKOS</h3>
+            <span style="font-size:12px;color:#888">224 productos | 111 con ID | 15 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">CAMARON U12-15</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1000200</span><span class="pres-mdesc">Camaron u 12</span></div><div class="pres-item pres-actual"><span class="pres-mid">1000201</span><span class="pres-mdesc">Camaron u 15 &larr; asignado</span></div></td></tr><tr><td class="pres-chef">ALMENDRA</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1003076</span><span class="pres-mdesc">Almendra entera 5 lb &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015468</span><span class="pres-mdesc">Almendra entera de 12.5 kg</span></div></td></tr><tr><td class="pres-chef">AZAFRAN</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015034</span><span class="pres-mdesc">Azafran &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015383</span><span class="pres-mdesc">Azafran 24 pza de 0.95 gr</span></div></td></tr><tr><td class="pres-chef">AZUCAR MORENA</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015385</span><span class="pres-mdesc">Azucar moscabada de 4.54 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015386</span><span class="pres-mdesc">Azucar moscabada de 56.81 kg</span></div></td></tr><tr><td class="pres-chef">FECULA DE MAIZ</td><td style="text-align:center;color:#888;font-weight:700">3</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015044</span><span class="pres-mdesc">Fecula de maiz 4 lb</span></div><div class="pres-item "><span class="pres-mid">1015393</span><span class="pres-mdesc">Fecula de maiz de 2.27 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015392</span><span class="pres-mdesc">Fecula de maiz de 5 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">LAUREL</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1004802</span><span class="pres-mdesc">Laurel &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015006</span><span class="pres-mdesc">Laurel 1 lb</span></div></td></tr><tr><td class="pres-chef">ACHIOTE</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015252</span><span class="pres-mdesc">Achiote 25 pza de 906 gr &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015253</span><span class="pres-mdesc">Achiote 50 pza de  gr 453</span></div></td></tr><tr><td class="pres-chef">HARINA DE TRIGO</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1014949</span><span class="pres-mdesc">Harina trigo saco 45.35 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1014950</span><span class="pres-mdesc">Harina trigo saco 54.43 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Lenteja SACO DE 45</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1004275</span><span class="pres-mdesc">Lenteja</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015235</span><span class="pres-mdesc">Lenteja 45.45 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Mayonesa estandar 1 gl 3.17kg  4/1</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1014953</span><span class="pres-mdesc">Mayonesa estandar 1 gl 3.17kg  4/1 &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015150</span><span class="pres-mdesc">Mayonesa estandar 4 pza 1 gl 3.17kg</span></div></td></tr><tr><td class="pres-chef">PASTA DE TOMATE</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015151</span><span class="pres-mdesc">Pasta de tomate 6 pza de 3.15 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015020</span><span class="pres-mdesc">Pasta de tomate de 3.15 kg</span></div></td></tr><tr><td class="pres-chef">PIÑONES</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015423</span><span class="pres-mdesc">pinones 11.36 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015422</span><span class="pres-mdesc">pinones 453 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">SAL FINA</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015155</span><span class="pres-mdesc">Sal fina 4 pza de 10 lb &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015009</span><span class="pres-mdesc">Sal fina de 10 lb</span></div></td></tr><tr><td class="pres-chef">Pasta tahini de ajonjoli c/18 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015417</span><span class="pres-mdesc">Pasta tahini de ajonjoli 17 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015419</span><span class="pres-mdesc">Pasta tahini de ajonjoli 453 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">ESPINACA BABY</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1001495</span><span class="pres-mdesc">Espinaca baby</span></div><div class="pres-item pres-actual"><span class="pres-mid">1006728</span><span class="pres-mdesc">Espinaca baby de 454 gr &larr; asignado</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="PASTELERIA">
+          <div class="pres-hdr" style="border-left-color:#2E6FAD">
+            <h3 style="color:#2E6FAD">PASTELERIA</h3>
+            <span style="font-size:12px;color:#888">125 productos | 63 con ID | 11 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Pasta tahini de ajonjoli c/18 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015417</span><span class="pres-mdesc">Pasta tahini de ajonjoli 17 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015419</span><span class="pres-mdesc">Pasta tahini de ajonjoli 453 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Piñon de 1 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015423</span><span class="pres-mdesc">pinones 11.36 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015422</span><span class="pres-mdesc">pinones 453 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Almendra fileteada de 1 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015356</span><span class="pres-mdesc">Almendra fileteada de 10 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015355</span><span class="pres-mdesc">Almendra fileteada de 2.27 kg</span></div></td></tr><tr><td class="pres-chef">Azucar moscabada de 2 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015385</span><span class="pres-mdesc">Azucar moscabada de 4.54 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015386</span><span class="pres-mdesc">Azucar moscabada de 56.81 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Fecula de maiz de 25 kg</td><td style="text-align:center;color:#888;font-weight:700">3</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015044</span><span class="pres-mdesc">Fecula de maiz 4 lb</span></div><div class="pres-item "><span class="pres-mid">1015393</span><span class="pres-mdesc">Fecula de maiz de 2.27 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015392</span><span class="pres-mdesc">Fecula de maiz de 5 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Glucosa de 25 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1015352</span><span class="pres-mdesc">Glucosa 14 kg &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015411</span><span class="pres-mdesc">Glucosa 5.27 kg</span></div></td></tr><tr><td class="pres-chef">Harina de trigo c/fuerza de 23 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015396</span><span class="pres-mdesc">Harina de trigo fuerte 45.45 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015397</span><span class="pres-mdesc">Harina de trigo fuerte 54.54 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Harina de trigo oro verde de 20 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1014949</span><span class="pres-mdesc">Harina trigo saco 45.35 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1014950</span><span class="pres-mdesc">Harina trigo saco 54.43 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Piña</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1014994</span><span class="pres-mdesc">Piña &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1004812</span><span class="pres-mdesc">Piña de 2 a 3 kg</span></div></td></tr><tr><td class="pres-chef">Pistache pelado premium de 1 kg</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015404</span><span class="pres-mdesc">Pistache pelado premium 2.27 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1015405</span><span class="pres-mdesc">Pistache pelado premium 9.09 kg &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Polvo para hornear de 4.50 kg</td><td style="text-align:center;color:#888;font-weight:700">3</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1015121</span><span class="pres-mdesc">Polvo para hornear de 2.27 kg</span></div><div class="pres-item "><span class="pres-mid">1015360</span><span class="pres-mdesc">Polvo para hornear de 3.63 kg</span></div><div class="pres-item pres-actual"><span class="pres-mid">1000647</span><span class="pres-mdesc">Polvo para hornear de 4.50 kg &larr; asignado</span></div></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pres-seccion" data-pcentro="TAVOLA">
+          <div class="pres-hdr" style="border-left-color:#8B4513">
+            <h3 style="color:#8B4513">TAVOLA</h3>
+            <span style="font-size:12px;color:#888">146 productos | 47 con ID | 5 con multiples presentaciones</span>
+          </div>
+          <table class="pres-tabla">
+            <thead><tr>
+              <th style="width:25%">Producto del Chef</th>
+              <th style="width:5%;text-align:center">Opc.</th>
+              <th style="width:70%">Presentaciones en ZPMM006 (Datos Maestros SAP)</th>
+            </tr></thead>
+            <tbody><tr><td class="pres-chef">Champiñon de 4 a 5 cm</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000806</span><span class="pres-mdesc">Champiñon de 4 a 5 cm &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014997</span><span class="pres-mdesc">Champiñon de 4 a 5 cm</span></div></td></tr><tr><td class="pres-chef">Espinaca baby de 454 gr</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1001495</span><span class="pres-mdesc">Espinaca baby</span></div><div class="pres-item pres-actual"><span class="pres-mid">1006728</span><span class="pres-mdesc">Espinaca baby de 454 gr &larr; asignado</span></div></td></tr><tr><td class="pres-chef">Espinaca</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1000844</span><span class="pres-mdesc">Espinaca &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1014998</span><span class="pres-mdesc">Espinaca</span></div></td></tr><tr><td class="pres-chef">Laurel</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item pres-actual"><span class="pres-mid">1004802</span><span class="pres-mdesc">Laurel &larr; asignado</span></div><div class="pres-item "><span class="pres-mid">1015006</span><span class="pres-mdesc">Laurel 1 lb</span></div></td></tr><tr><td class="pres-chef">Piña</td><td style="text-align:center;color:#888;font-weight:700">2</td><td class="pres-col"><div class="pres-item "><span class="pres-mid">1014994</span><span class="pres-mdesc">Piña</span></div><div class="pres-item pres-actual"><span class="pres-mid">1004812</span><span class="pres-mdesc">Piña de 2 a 3 kg &larr; asignado</span></div></td></tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:#aaa;padding:12px">
+      Fuente: ZPMM006 Datos Maestros SAP — Solo productos registrados en la base de datos
+    </div>
+    
+</div><!-- /tab-presentaciones -->
 
 <script>
 // ── DATOS ──────────────────────────────────────────────────
@@ -1916,6 +2135,21 @@ function cambiarTab(tab, btn) {
 }
 
 // ══════════════════════════════════════════════════════════
+// PRESENTACIONES
+function presFiltrarCentro() {
+  const sel = document.getElementById('pres-f-centro').value;
+  document.querySelectorAll('.pres-seccion').forEach(s => {
+    s.style.display = (!sel || s.dataset.pcentro === sel) ? '' : 'none';
+  });
+}
+function presFiltrarTexto() {
+  const txt = document.getElementById('pres-buscar').value.toLowerCase();
+  document.querySelectorAll('.pres-tabla tbody tr').forEach(tr => {
+    tr.style.display = (!txt || tr.textContent.toLowerCase().includes(txt)) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════════════
 // CATALOGO
 // ══════════════════════════════════════════════════════════
 let catRestActivo = 'TODOS';
@@ -2212,7 +2446,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 31/03/2026 16:01
+    Generado: 31/03/2026 17:45
   </div>
 </div>
 
@@ -2221,7 +2455,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 31/03/2026 16:01 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 31/03/2026 17:45 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>
