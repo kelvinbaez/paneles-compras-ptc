@@ -683,7 +683,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 31/03/2026 18:16
+    Generado: 31/03/2026 23:21
     <div class="header-excel-ts">Excel: 31/03/2026 18:00</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -1403,7 +1403,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 31/03/2026 18:16
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 31/03/2026 23:21
 </div>
 
 </div><!-- /tab-dashboard -->
@@ -2026,10 +2026,30 @@ function abrirPanelAsignacion(rest, desc) {
   document.getElementById('modal-results').innerHTML =
     '<div class="modal-info">Escribe al menos 3 caracteres para buscar en ' + ZPMM006.length.toLocaleString() + ' materiales de SAP</div>';
 
-  // Pre-seleccionar el centro de origen
-  document.querySelectorAll('.chk-centro').forEach(cb => {
-    cb.checked = (cb.value === rest);
+  // Buscar que otros centros tienen el mismo producto
+  const descNorm = desc.toUpperCase().trim();
+  const centrosConMismo = new Set();
+  centrosConMismo.add(rest);
+  SIN_ID.forEach(p => {
+    if (p.desc.toUpperCase().trim() === descNorm) centrosConMismo.add(p.rest);
   });
+
+  // Pre-seleccionar todos los centros que lo tienen
+  document.querySelectorAll('.chk-centro').forEach(cb => {
+    cb.checked = centrosConMismo.has(cb.value);
+  });
+
+  // Mostrar aviso si otros centros tambien lo piden
+  const otrosCentros = [...centrosConMismo].filter(c => c !== rest);
+  const infoDiv = document.getElementById('modal-centros-info');
+  if (infoDiv) {
+    if (otrosCentros.length > 0) {
+      infoDiv.innerHTML = '<div style="margin-top:6px;padding:6px 10px;background:#fff3cd;border-radius:6px;font-size:11px;color:#856404">'
+        + '&#9888; Tambien solicitado por: <strong>' + otrosCentros.join(', ') + '</strong> — se asignara a todos los seleccionados</div>';
+    } else {
+      infoDiv.innerHTML = '';
+    }
+  }
 
   document.getElementById('modal-zpmm').classList.add('visible');
   setTimeout(() => document.getElementById('modal-buscar').focus(), 100);
@@ -2372,20 +2392,8 @@ function sugAsignar(centro, descChef, idSap, descSap) {
 }
 
 function sugBuscarZPMM(centro, descChef) {
-  // Reusar el modal de busqueda existente
-  asigItemActual = { desc: descChef, rest: centro };
-  const mp = document.getElementById('modal-producto');
-  const mr = document.getElementById('modal-rest');
-  if (mp) mp.textContent = descChef;
-  if (mr) mr.textContent = centro;
-  // Pre-seleccionar centro
-  document.querySelectorAll('.chk-centro').forEach(cb => {
-    cb.checked = cb.value === centro;
-  });
-  document.getElementById('modal-buscar').value = '';
-  document.getElementById('modal-results').innerHTML = '<div class="modal-info">Escribe al menos 3 caracteres para buscar</div>';
-  document.getElementById('modal-zpmm').style.display = 'flex';
-  document.getElementById('modal-buscar').focus();
+  // Reusar el modal principal — delegar a abrirPanelAsignacion que ya detecta centros
+  abrirPanelAsignacion(centro, descChef);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2700,7 +2708,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 31/03/2026 18:16
+    Generado: 31/03/2026 23:21
   </div>
 </div>
 
@@ -2709,7 +2717,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 31/03/2026 18:16 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 31/03/2026 23:21 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>
