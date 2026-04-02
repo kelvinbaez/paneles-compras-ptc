@@ -489,8 +489,8 @@ tbody td { padding:11px 14px; vertical-align:middle; }
 tr.editado td { background:#fffde7 !important; }
 tr.eliminado { display:none !important; }
 
-.cat-rest-block { display:none; }
-.cat-rest-block.visible { display:block; }
+.cat-rest-block { display:block; }
+.cat-rest-block.oculto { display:none; }
 
 .cat-stats-bar {
   display:flex; gap:20px; padding:16px 40px; background:#f0f4f8;
@@ -704,7 +704,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 02/04/2026 14:16
+    Generado: 02/04/2026 14:49
     <div class="header-excel-ts">Excel: 02/04/2026 10:09</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -1353,30 +1353,6 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   </div>
 </div>
 
-<!-- PANEL ASIGNACION MANUAL (solo version admin) -->
-
-
-<!-- MODAL BUSQUEDA ZPMM006 (disponible en ambas versiones) -->
-<div class="modal-overlay" id="modal-zpmm" onclick="if(event.target===this)cerrarModal()">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>Consultar Datos Maestros (ZPMM006)</h3>
-      <button class="modal-close" onclick="cerrarModal()">&times;</button>
-    </div>
-    <div style="padding:10px 24px;background:#f8f9fa;border-bottom:1px solid #eee">
-      <div style="font-size:12px;color:#666">Consultando material: <strong id="modal-producto" style="color:var(--mp-navy)"></strong></div>
-      <div style="font-size:11px;color:#999;margin-top:2px">Origen: <strong id="modal-rest"></strong></div>
-      
-    </div>
-    <div class="modal-search">
-      <input type="text" id="modal-buscar" placeholder="Escribe para buscar por descripcion o ID..." oninput="buscarZPMM()">
-    </div>
-    <div class="modal-results" id="modal-results">
-      <div class="modal-info">Escribe al menos 3 caracteres para buscar en 4529 materiales de SAP</div>
-    </div>
-  </div>
-</div>
-
 <!-- FILTROS -->
 <div class="filtros">
   <label>Filtrar:</label>
@@ -1458,10 +1434,34 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 14:16
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 14:49
 </div>
 
 </div><!-- /tab-dashboard -->
+
+<!-- PANEL ASIGNACION MANUAL (solo version admin) -->
+
+
+<!-- MODAL BUSQUEDA ZPMM006 (disponible en ambas versiones) -->
+<div class="modal-overlay" id="modal-zpmm" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Consultar Datos Maestros (ZPMM006)</h3>
+      <button class="modal-close" onclick="cerrarModal()">&times;</button>
+    </div>
+    <div style="padding:10px 24px;background:#f8f9fa;border-bottom:1px solid #eee">
+      <div style="font-size:12px;color:#666">Consultando material: <strong id="modal-producto" style="color:var(--mp-navy)"></strong></div>
+      <div style="font-size:11px;color:#999;margin-top:2px">Origen: <strong id="modal-rest"></strong></div>
+      
+    </div>
+    <div class="modal-search">
+      <input type="text" id="modal-buscar" placeholder="Escribe para buscar por descripcion o ID..." oninput="buscarZPMM()">
+    </div>
+    <div class="modal-results" id="modal-results">
+      <div class="modal-info">Escribe al menos 3 caracteres para buscar en 4529 materiales de SAP</div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- TAB CATALOGO                                           -->
@@ -2089,12 +2089,13 @@ function abrirPanelAsignacion(rest, desc) {
   document.getElementById('modal-results').innerHTML =
     '<div class="modal-info">Escribe al menos 3 caracteres para buscar en ' + ZPMM006.length.toLocaleString() + ' materiales de SAP</div>';
 
-  // Buscar que otros centros tienen el mismo producto
-  const descNorm = desc.toUpperCase().trim();
+  // Buscar que otros centros tienen el mismo producto (normaliza espacios)
+  const _norm = s => s.toUpperCase().trim().replace(/\s+/g,' ');
+  const descNorm = _norm(desc);
   const centrosConMismo = new Set();
   centrosConMismo.add(rest);
   SIN_ID.forEach(p => {
-    if (p.desc.toUpperCase().trim() === descNorm) centrosConMismo.add(p.rest);
+    if (_norm(p.desc) === descNorm) centrosConMismo.add(p.rest);
   });
 
   // Pre-seleccionar todos los centros que lo tienen
@@ -2492,7 +2493,7 @@ let catRestActivo = 'TODOS';
 
 function catMostrarTodos() {
   catRestActivo = 'TODOS';
-  document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.add('visible'));
+  document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.remove('oculto'));
   catFiltrar();
 }
 
@@ -2501,10 +2502,10 @@ function catFiltrarRest(btn) {
   btn.classList.add('activo');
   catRestActivo = btn.dataset.rest;
   if (catRestActivo === 'TODOS') {
-    document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.add('visible'));
+    document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.remove('oculto'));
   } else {
     document.querySelectorAll('.cat-rest-block').forEach(b => {
-      b.classList.toggle('visible', b.dataset.rest === catRestActivo);
+      b.classList.toggle('oculto', b.dataset.rest !== catRestActivo);
     });
   }
   catFiltrar();
@@ -2514,7 +2515,7 @@ function catFiltrar() {
   const busq   = (document.getElementById('cat-buscar').value || '').toLowerCase();
   const estado = document.getElementById('cat-estado').value;
 
-  document.querySelectorAll('.cat-rest-block.visible .cat-table tbody tr').forEach(tr => {
+  document.querySelectorAll('.cat-rest-block:not(.oculto) .cat-table tbody tr').forEach(tr => {
     if (tr.querySelector('td[colspan]')) { tr.style.display = ''; return; }
     const id   = (tr.dataset.id   || '').toLowerCase();
     const desc = (tr.dataset.desc || '').toLowerCase();
@@ -2782,7 +2783,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 02/04/2026 14:16
+    Generado: 02/04/2026 14:49
   </div>
 </div>
 
@@ -2791,7 +2792,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 14:16 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 14:49 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>
