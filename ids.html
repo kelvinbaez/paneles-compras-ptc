@@ -558,33 +558,46 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   padding:8px 12px; border:1px solid #dde4ee; border-radius:7px;
   font-size:13px; outline:none;
 }
-.asig-list { max-height:500px; overflow-y:auto; }
+.asig-list { max-height:600px; overflow-y:auto; padding:8px 12px; }
 .asig-item {
-  padding:12px 20px; border-bottom:1px solid #f0f0f0;
-  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  border:1px solid #e8ecf0; border-radius:10px; padding:14px 18px;
+  margin-bottom:10px; transition:border-color .15s;
 }
-.asig-item:hover { background:#fafafa; }
-.asig-item.asignado { background:#f0faf4; }
-.asig-rest-tag {
-  background:#eaf0f8; color:#1a5276; border:1px solid #aed6f1;
-  padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700;
-  min-width:60px; text-align:center;
+.asig-item:hover { border-color:#aed6f1; }
+.asig-item.asignado { border-color:#27ae60; background:#f0faf4; }
+.asig-item-head {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;
 }
-.asig-desc { flex:1; font-size:13px; font-weight:600; color:#333; min-width:200px; }
+.asig-prod { font-weight:700; font-size:14px; color:#1B3A5F; }
+.asig-centros-count { font-size:11px; font-weight:600; }
+.asig-centros {
+  display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;
+}
+.asig-centros label {
+  display:flex; align-items:center; gap:4px; padding:4px 10px;
+  border-radius:8px; font-size:11px; font-weight:600;
+  background:#f0f4f8; cursor:pointer; transition:background .15s;
+}
+.asig-centros label:hover { background:#e0eaf4; }
+.asig-centros label input { accent-color:#1B3A5F; }
+.asig-actions {
+  display:flex; align-items:center; gap:10px; margin-top:4px;
+}
+.asig-sin-id { color:#c0392b; font-size:12px; font-weight:600; }
 .asig-id-display {
-  font-family:monospace; font-weight:800; color:var(--con-id);
-  font-size:13px; min-width:80px;
+  display:inline-block; padding:3px 10px; background:#27ae60; color:white;
+  border-radius:6px; font-size:12px; font-weight:700;
 }
-.asig-id-display.vacio { color:#ccc; }
+.asig-desc-sap { color:#555; font-size:12px; }
 .asig-buscar-btn {
-  padding:5px 14px; background:var(--mp-blue); color:white;
-  border:none; border-radius:5px; font-size:11px; font-weight:700;
+  padding:6px 14px; background:var(--mp-navy); color:white;
+  border:none; border-radius:6px; font-size:12px; font-weight:600;
   cursor:pointer; transition:background .15s;
 }
-.asig-buscar-btn:hover { background:#1a5276; }
+.asig-buscar-btn:hover { background:var(--mp-blue); }
 .asig-quitar-btn {
-  padding:5px 10px; background:#e74c3c; color:white;
-  border:none; border-radius:5px; font-size:10px; font-weight:700;
+  padding:4px 10px; background:#e74c3c; color:white;
+  border:none; border-radius:6px; font-size:11px; font-weight:600;
   cursor:pointer;
 }
 /* MODAL BUSQUEDA ZPMM006 */
@@ -639,12 +652,12 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 .modal-chk:hover { background:#dce6f0; }
 .modal-chk:has(input:checked) { background:#1B3A5F; color:white; border-color:#1B3A5F; }
 .modal-chk input { margin:0; cursor:pointer; }
-/* ACCIONES ASIGNACION */
-.asig-actions {
+/* ACCIONES ASIGNACION (barra inferior descargar/aplicar) */
+.asig-footer-actions {
   padding:12px 20px; background:#f0f6ff; border-top:1px solid #d0e0f0;
   display:none; align-items:center; gap:14px;
 }
-.asig-actions.visible { display:flex; }
+.asig-footer-actions.visible { display:flex; }
 .asig-count { font-size:13px; color:#1B3A5F; font-weight:600; flex:1; }
 .btn-asig {
   padding:9px 22px; border:none; border-radius:6px; font-size:13px;
@@ -704,7 +717,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 02/04/2026 14:51
+    Generado: 02/04/2026 15:07
     <div class="header-excel-ts">Excel: 02/04/2026 14:51</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -1434,7 +1447,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 14:51
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 15:07
 </div>
 
 </div><!-- /tab-dashboard -->
@@ -1456,7 +1469,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
       <span style="font-size:12px;color:#888" id="asig-conteo">1168 productos</span>
     </div>
     <div class="asig-list" id="asig-list"></div>
-    <div class="asig-actions" id="asig-actions">
+    <div class="asig-footer-actions" id="asig-actions">
       <span class="asig-count" id="asig-count-msg">0 asignaciones</span>
       <button class="btn-asig limpiar" onclick="limpiarAsigManuales()">Limpiar</button>
       <button class="btn-asig aplicar" onclick="aplicarAsigManuales()">&#11015; Descargar Asignaciones</button>
@@ -2063,47 +2076,99 @@ function togglePanelAsig() {
   if (asigPanelVisible) renderAsigLista();
 }
 
+function _normAsig(s) { return s.toUpperCase().trim().replace(/\s+/g,' '); }
+
 function renderAsigLista() {
   const lista = document.getElementById('asig-list');
   if (!lista) return;
   const busq  = (document.getElementById('asig-buscar').value || '').toLowerCase();
   const fRest = document.getElementById('asig-f-rest').value;
 
-  const filtrados = SIN_ID.filter(p => {
-    if (fRest && p.rest !== fRest) return false;
-    if (busq && !(p.desc.toLowerCase().includes(busq) || (p.cat||'').toLowerCase().includes(busq))) return false;
-    return true;
+  // Agrupar por descripcion normalizada
+  const grupos = {};
+  const orden = [];
+  SIN_ID.forEach(p => {
+    if (fRest && p.rest !== fRest) return;
+    if (busq && !(p.desc.toLowerCase().includes(busq) || (p.cat||'').toLowerCase().includes(busq))) return;
+    const k = _normAsig(p.desc);
+    if (!grupos[k]) { grupos[k] = { desc: p.desc, cat: p.cat, centros: [] }; orden.push(k); }
+    if (!grupos[k].centros.includes(p.rest)) grupos[k].centros.push(p.rest);
   });
 
   const conteo = document.getElementById('asig-conteo');
-  if (conteo) conteo.textContent = filtrados.length + ' de ' + SIN_ID.length + ' productos';
+  if (conteo) conteo.textContent = orden.length + ' productos unicos de ' + SIN_ID.length + ' asignaciones';
 
-  lista.innerHTML = filtrados.map(p => {
-    const key = p.rest + '||' + p.desc;
-    const asig = asigManuales[key];
-    const asignado = asig ? true : false;
+  const _COLS = {'NIKOS':'#1B3A5F','PASTELERIA':'#2E6FAD','HABIBI':'#375623','BARES':'#722F37',
+    'TAVOLA':'#8B4513','CARVAO':'#B8860B','JADE':'#2E8B57','LA CANTINA':'#CC5500','CASA MACAO':'#6B3FA0'};
 
-    // Buscar si este producto fue asignado a otros centros tambien
-    const centrosAsig = Object.values(asigManuales)
-      .filter(a => a.desc_chef === p.desc)
-      .map(a => a.restaurante);
-    const multiCentro = centrosAsig.length > 1
-      ? '<span style="font-size:10px;color:#C8992A;margin-left:4px">+' + centrosAsig.length + ' centros</span>' : '';
+  lista.innerHTML = orden.map(k => {
+    const g = grupos[k];
+    const nCentros = g.centros.length;
 
-    return `<div class="asig-item ${asignado ? 'asignado' : ''}" data-key="${esc(key)}">
-      <span class="asig-rest-tag">${esc(p.rest)}</span>
-      <span class="asig-desc">${esc(p.desc)}${multiCentro}</span>
-      ${asignado
-        ? `<span class="asig-id-display">${esc(asig.id_sap)}</span>
-           <span style="font-size:11px;color:#555;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(asig.desc_sap)}</span>
-           <button class="asig-quitar-btn" onclick="quitarAsignacion('${key.replace(/'/g, "\\'")}')">Quitar</button>`
-        : `<span class="asig-id-display vacio">Sin ID</span>
-           <button class="asig-buscar-btn" onclick="abrirPanelAsignacion('${p.rest}', '${p.desc.replace(/'/g, "\\'")}')">Buscar en ZPMM006</button>`
-      }
+    // Verificar si ya fue asignado (revisar primer centro)
+    const primerKey = g.centros[0] + '||' + g.desc;
+    const asig = asigManuales[primerKey];
+    const asignado = !!asig;
+
+    // Checkboxes de centros
+    const chks = g.centros.map(c => {
+      const col = _COLS[c] || '#666';
+      return asignado
+        ? '<label style="background:' + col + '15;border:1px solid ' + col + '40"><input type="checkbox" checked disabled> <span style="color:' + col + '">' + esc(c) + '</span></label>'
+        : '<label><input type="checkbox" checked data-desc="' + esc(g.desc).replace(/"/g,'&quot;') + '" data-rest="' + esc(c) + '"> <span>' + esc(c) + '</span></label>';
+    }).join('');
+
+    const countColor = asignado ? '#27ae60' : (nCentros > 1 ? '#C8992A' : '#888');
+    const countText = asignado ? 'Asignado a ' + nCentros + ' centro' + (nCentros>1?'s':'') : nCentros + ' centro' + (nCentros>1?'s':'');
+
+    const descEsc = g.desc.replace(/'/g, "\\'");
+
+    return `<div class="asig-item ${asignado ? 'asignado' : ''}">
+      <div class="asig-item-head">
+        <span class="asig-prod">${esc(g.desc)}</span>
+        <span class="asig-centros-count" style="color:${countColor}">${countText}</span>
+      </div>
+      <div class="asig-centros">${chks}</div>
+      <div class="asig-actions">
+        ${asignado
+          ? `<span class="asig-id-display">${esc(asig.id_sap)}</span>
+             <span class="asig-desc-sap">${esc(asig.desc_sap)}</span>
+             <button class="asig-quitar-btn" onclick="quitarAsigGrupo('${descEsc}')">Quitar</button>`
+          : `<span class="asig-sin-id">Sin ID</span>
+             <button class="asig-buscar-btn" onclick="abrirPanelAsigGrupo('${descEsc}')">Buscar en ZPMM006</button>`
+        }
+      </div>
     </div>`;
   }).join('');
 
   actualizarConteoAsig();
+}
+
+// Abrir modal desde vista agrupada: pre-selecciona centros con checkbox marcado
+function abrirPanelAsigGrupo(desc) {
+  // Recoger centros con checkbox marcado para este producto
+  const checks = document.querySelectorAll('.asig-centros input[data-desc="' + desc.replace(/"/g, '&quot;') + '"]:checked');
+  const centros = [];
+  checks.forEach(cb => centros.push(cb.dataset.rest));
+  if (centros.length === 0) return;
+  // Usar el primer centro como referencia
+  abrirPanelAsignacion(centros[0], desc);
+  // Marcar los centros correctos en el modal
+  setTimeout(() => {
+    document.querySelectorAll('.chk-centro').forEach(cb => {
+      cb.checked = centros.includes(cb.value);
+    });
+  }, 50);
+}
+
+// Quitar asignacion de todos los centros de un producto agrupado
+function quitarAsigGrupo(desc) {
+  const keys = Object.keys(asigManuales).filter(k => {
+    const parts = k.split('||');
+    return parts.length === 2 && _normAsig(parts[1]) === _normAsig(desc);
+  });
+  keys.forEach(k => delete asigManuales[k]);
+  renderAsigLista();
 }
 
 function filtrarAsigLista() {
@@ -2812,7 +2877,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 02/04/2026 14:51
+    Generado: 02/04/2026 15:07
   </div>
 </div>
 
@@ -2821,7 +2886,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 14:51 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 15:07 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>
