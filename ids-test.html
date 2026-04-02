@@ -489,8 +489,8 @@ tbody td { padding:11px 14px; vertical-align:middle; }
 tr.editado td { background:#fffde7 !important; }
 tr.eliminado { display:none !important; }
 
-.cat-rest-block { display:block; }
-.cat-rest-block.oculto { display:none; }
+.cat-rest-block { display:none; }
+.cat-rest-block.visible { display:block; }
 
 .cat-stats-bar {
   display:flex; gap:20px; padding:16px 40px; background:#f0f4f8;
@@ -704,7 +704,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 02/04/2026 14:46
+    Generado: 02/04/2026 14:16
     <div class="header-excel-ts">Excel: 02/04/2026 10:09</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -1353,6 +1353,59 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   </div>
 </div>
 
+<!-- PANEL ASIGNACION MANUAL (solo version admin) -->
+<div class="tab-content" id="tab-asig"><div class="asig-section" id="asig-section">
+  <div class="asig-head" onclick="togglePanelAsig()">
+    <h3>Productos sin ID &mdash; Asignacion Manual (1169 pendientes)</h3>
+    <span>Busca en ZPMM006 y asigna el ID correcto a cada producto</span>
+    <span class="asig-toggle" id="asig-toggle-btn">Ver lista &#9660;</span>
+  </div>
+  <div class="asig-body" id="asig-body">
+    <div class="asig-toolbar">
+      <input type="text" id="asig-buscar" placeholder="Filtrar productos pendientes..." oninput="filtrarAsigLista()">
+      <select id="asig-f-rest" onchange="filtrarAsigLista()">
+        <option value="">Todos los centros</option>
+        <option value="NIKOS">NIKOS</option><option value="PASTELERIA">PASTELERIA</option><option value="HABIBI">HABIBI</option><option value="BARES">MINI BARES</option><option value="TAVOLA">TAVOLA</option><option value="CARVAO">CARVAO</option><option value="JADE">JADE</option><option value="LA CANTINA">LA CANTINA</option><option value="CASA MACAO">CASA MACAO</option>
+      </select>
+      <span style="font-size:12px;color:#888" id="asig-conteo">1169 productos</span>
+    </div>
+    <div class="asig-list" id="asig-list"></div>
+    <div class="asig-actions" id="asig-actions">
+      <span class="asig-count" id="asig-count-msg">0 asignaciones</span>
+      <button class="btn-asig limpiar" onclick="limpiarAsigManuales()">Limpiar</button>
+      <button class="btn-asig aplicar" onclick="aplicarAsigManuales()">&#11015; Descargar Asignaciones</button>
+      <button class="btn-asig actualizar" id="btn-actualizar" onclick="mostrarInstrucciones()" style="display:none">&#9889; Aplicar al Excel</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- MODAL BUSQUEDA ZPMM006 (disponible en ambas versiones) -->
+<div class="modal-overlay" id="modal-zpmm" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Buscar en Datos Maestros (ZPMM006)</h3>
+      <button class="modal-close" onclick="cerrarModal()">&times;</button>
+    </div>
+    <div style="padding:10px 24px;background:#f8f9fa;border-bottom:1px solid #eee">
+      <div style="font-size:12px;color:#666">Asignando ID para: <strong id="modal-producto" style="color:var(--mp-navy)"></strong></div>
+      <div style="font-size:11px;color:#999;margin-top:2px">Origen: <strong id="modal-rest"></strong></div>
+      <div style="margin-top:8px">
+        <span style="font-size:11px;color:#666;font-weight:600">Asignar a centro(s) de consumo:</span>
+        <div id="modal-centros" style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+          <label class="modal-chk"><input type="checkbox" value="NIKOS" class="chk-centro"> NIKOS</label><label class="modal-chk"><input type="checkbox" value="PASTELERIA" class="chk-centro"> PASTELERIA</label><label class="modal-chk"><input type="checkbox" value="HABIBI" class="chk-centro"> HABIBI</label><label class="modal-chk"><input type="checkbox" value="BARES" class="chk-centro"> MINI BARES</label><label class="modal-chk"><input type="checkbox" value="TAVOLA" class="chk-centro"> TAVOLA</label><label class="modal-chk"><input type="checkbox" value="CARVAO" class="chk-centro"> CARVAO</label><label class="modal-chk"><input type="checkbox" value="JADE" class="chk-centro"> JADE</label><label class="modal-chk"><input type="checkbox" value="LA CANTINA" class="chk-centro"> LA CANTINA</label><label class="modal-chk"><input type="checkbox" value="CASA MACAO" class="chk-centro"> CASA MACAO</label>
+        </div>
+        <div id="modal-centros-info"></div>
+      </div>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="modal-buscar" placeholder="Escribe para buscar por descripcion o ID..." oninput="buscarZPMM()">
+    </div>
+    <div class="modal-results" id="modal-results">
+      <div class="modal-info">Escribe al menos 3 caracteres para buscar en 4529 materiales de SAP</div>
+    </div>
+  </div>
+</div>
+
 <!-- FILTROS -->
 <div class="filtros">
   <label>Filtrar:</label>
@@ -1434,63 +1487,10 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 14:46
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 14:16
 </div>
 
 </div><!-- /tab-dashboard -->
-
-<!-- PANEL ASIGNACION MANUAL (solo version admin) -->
-<div class="tab-content" id="tab-asig"><div class="asig-section" id="asig-section">
-  <div class="asig-head" onclick="togglePanelAsig()">
-    <h3>Productos sin ID &mdash; Asignacion Manual (1169 pendientes)</h3>
-    <span>Busca en ZPMM006 y asigna el ID correcto a cada producto</span>
-    <span class="asig-toggle" id="asig-toggle-btn">Ver lista &#9660;</span>
-  </div>
-  <div class="asig-body" id="asig-body">
-    <div class="asig-toolbar">
-      <input type="text" id="asig-buscar" placeholder="Filtrar productos pendientes..." oninput="filtrarAsigLista()">
-      <select id="asig-f-rest" onchange="filtrarAsigLista()">
-        <option value="">Todos los centros</option>
-        <option value="NIKOS">NIKOS</option><option value="PASTELERIA">PASTELERIA</option><option value="HABIBI">HABIBI</option><option value="BARES">MINI BARES</option><option value="TAVOLA">TAVOLA</option><option value="CARVAO">CARVAO</option><option value="JADE">JADE</option><option value="LA CANTINA">LA CANTINA</option><option value="CASA MACAO">CASA MACAO</option>
-      </select>
-      <span style="font-size:12px;color:#888" id="asig-conteo">1169 productos</span>
-    </div>
-    <div class="asig-list" id="asig-list"></div>
-    <div class="asig-actions" id="asig-actions">
-      <span class="asig-count" id="asig-count-msg">0 asignaciones</span>
-      <button class="btn-asig limpiar" onclick="limpiarAsigManuales()">Limpiar</button>
-      <button class="btn-asig aplicar" onclick="aplicarAsigManuales()">&#11015; Descargar Asignaciones</button>
-      <button class="btn-asig actualizar" id="btn-actualizar" onclick="mostrarInstrucciones()" style="display:none">&#9889; Aplicar al Excel</button>
-    </div>
-  </div>
-</div></div>
-
-<!-- MODAL BUSQUEDA ZPMM006 (disponible en ambas versiones) -->
-<div class="modal-overlay" id="modal-zpmm" onclick="if(event.target===this)cerrarModal()">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>Buscar en Datos Maestros (ZPMM006)</h3>
-      <button class="modal-close" onclick="cerrarModal()">&times;</button>
-    </div>
-    <div style="padding:10px 24px;background:#f8f9fa;border-bottom:1px solid #eee">
-      <div style="font-size:12px;color:#666">Asignando ID para: <strong id="modal-producto" style="color:var(--mp-navy)"></strong></div>
-      <div style="font-size:11px;color:#999;margin-top:2px">Origen: <strong id="modal-rest"></strong></div>
-      <div style="margin-top:8px">
-        <span style="font-size:11px;color:#666;font-weight:600">Asignar a centro(s) de consumo:</span>
-        <div id="modal-centros" style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
-          <label class="modal-chk"><input type="checkbox" value="NIKOS" class="chk-centro"> NIKOS</label><label class="modal-chk"><input type="checkbox" value="PASTELERIA" class="chk-centro"> PASTELERIA</label><label class="modal-chk"><input type="checkbox" value="HABIBI" class="chk-centro"> HABIBI</label><label class="modal-chk"><input type="checkbox" value="BARES" class="chk-centro"> MINI BARES</label><label class="modal-chk"><input type="checkbox" value="TAVOLA" class="chk-centro"> TAVOLA</label><label class="modal-chk"><input type="checkbox" value="CARVAO" class="chk-centro"> CARVAO</label><label class="modal-chk"><input type="checkbox" value="JADE" class="chk-centro"> JADE</label><label class="modal-chk"><input type="checkbox" value="LA CANTINA" class="chk-centro"> LA CANTINA</label><label class="modal-chk"><input type="checkbox" value="CASA MACAO" class="chk-centro"> CASA MACAO</label>
-        </div>
-        <div id="modal-centros-info"></div>
-      </div>
-    </div>
-    <div class="modal-search">
-      <input type="text" id="modal-buscar" placeholder="Escribe para buscar por descripcion o ID..." oninput="buscarZPMM()">
-    </div>
-    <div class="modal-results" id="modal-results">
-      <div class="modal-info">Escribe al menos 3 caracteres para buscar en 4529 materiales de SAP</div>
-    </div>
-  </div>
-</div>
 
 <!-- ═══════════════════════════════════════════════════════ -->
 <!-- TAB CATALOGO                                           -->
@@ -2054,6 +2054,14 @@ let asigPanelVisible = false;
 let asigItemActual = null;  // {rest, desc} del producto siendo asignado
 
 function togglePanelAsig() {
+  try {
+    _togglePanelAsigReal();
+  } catch(e) {
+    document.getElementById('asig-body').style.display = 'block';
+    document.getElementById('asig-body').innerHTML = '<div style="padding:20px;color:red;font-size:16px;background:#ffe0e0">ERROR en togglePanelAsig: ' + e.message + '<br>Stack: ' + e.stack + '</div>';
+  }
+}
+function _togglePanelAsigReal() {
   const body = document.getElementById('asig-body');
   const btn  = document.getElementById('asig-toggle-btn');
   if (!body) return;
@@ -2064,6 +2072,15 @@ function togglePanelAsig() {
 }
 
 function renderAsigLista() {
+  try {
+    _renderAsigListaReal();
+  } catch(e) {
+    var lista = document.getElementById('asig-list');
+    if (lista) lista.innerHTML = '<div style="padding:20px;color:red;font-size:16px;background:#ffe0e0">ERROR en renderAsigLista: ' + e.message + '<br>Stack: ' + e.stack + '</div>';
+    else document.title = 'ERROR: ' + e.message;
+  }
+}
+function _renderAsigListaReal() {
   const lista = document.getElementById('asig-list');
   if (!lista) return;
   const busq  = (document.getElementById('asig-buscar').value || '').toLowerCase();
@@ -2118,13 +2135,12 @@ function abrirPanelAsignacion(rest, desc) {
   document.getElementById('modal-results').innerHTML =
     '<div class="modal-info">Escribe al menos 3 caracteres para buscar en ' + ZPMM006.length.toLocaleString() + ' materiales de SAP</div>';
 
-  // Buscar que otros centros tienen el mismo producto (normaliza espacios)
-  const _norm = s => s.toUpperCase().trim().replace(/\s+/g,' ');
-  const descNorm = _norm(desc);
+  // Buscar que otros centros tienen el mismo producto
+  const descNorm = desc.toUpperCase().trim();
   const centrosConMismo = new Set();
   centrosConMismo.add(rest);
   SIN_ID.forEach(p => {
-    if (_norm(p.desc) === descNorm) centrosConMismo.add(p.rest);
+    if (p.desc.toUpperCase().trim() === descNorm) centrosConMismo.add(p.rest);
   });
 
   // Pre-seleccionar todos los centros que lo tienen
@@ -2522,7 +2538,7 @@ let catRestActivo = 'TODOS';
 
 function catMostrarTodos() {
   catRestActivo = 'TODOS';
-  document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.remove('oculto'));
+  document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.add('visible'));
   catFiltrar();
 }
 
@@ -2531,10 +2547,10 @@ function catFiltrarRest(btn) {
   btn.classList.add('activo');
   catRestActivo = btn.dataset.rest;
   if (catRestActivo === 'TODOS') {
-    document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.remove('oculto'));
+    document.querySelectorAll('.cat-rest-block').forEach(b => b.classList.add('visible'));
   } else {
     document.querySelectorAll('.cat-rest-block').forEach(b => {
-      b.classList.toggle('oculto', b.dataset.rest !== catRestActivo);
+      b.classList.toggle('visible', b.dataset.rest === catRestActivo);
     });
   }
   catFiltrar();
@@ -2544,7 +2560,7 @@ function catFiltrar() {
   const busq   = (document.getElementById('cat-buscar').value || '').toLowerCase();
   const estado = document.getElementById('cat-estado').value;
 
-  document.querySelectorAll('.cat-rest-block:not(.oculto) .cat-table tbody tr').forEach(tr => {
+  document.querySelectorAll('.cat-rest-block.visible .cat-table tbody tr').forEach(tr => {
     if (tr.querySelector('td[colspan]')) { tr.style.display = ''; return; }
     const id   = (tr.dataset.id   || '').toLowerCase();
     const desc = (tr.dataset.desc || '').toLowerCase();
@@ -2812,7 +2828,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 02/04/2026 14:46
+    Generado: 02/04/2026 14:16
   </div>
 </div>
 
@@ -2821,7 +2837,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 14:46 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 14:16 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>
