@@ -546,7 +546,6 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 .asig-head span { font-size:11px; color:#a04040; }
 .asig-toggle { font-size:12px; color:var(--sin-id); font-weight:700; }
 .asig-body { padding:0; display:none; }
-#tab-asig.activo .asig-body { display:block; }
 .asig-toolbar {
   padding:12px 20px; background:#f8f9fa; border-bottom:1px solid #eee;
   display:flex; gap:10px; align-items:center; flex-wrap:wrap;
@@ -705,7 +704,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
   <div class="header-divider"></div>
   <div class="header-right">
     <strong id="fecha-hoy"></strong>
-    Generado: 02/04/2026 14:09
+    Generado: 02/04/2026 14:16
     <div class="header-excel-ts">Excel: 02/04/2026 10:09</div>
     <div class="header-dept">Moon Palace &mdash; Compras</div>
   </div>
@@ -1488,7 +1487,7 @@ thead th.sort-desc .sort-icon { opacity:1; color:var(--mp-blue); }
 </div>
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 14:09
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; Generado 02/04/2026 14:16
 </div>
 
 </div><!-- /tab-dashboard -->
@@ -2393,10 +2392,8 @@ function cambiarTab(tab, btn) {
   btn.classList.add('activo');
   if (tab === 'catalogo') catMostrarTodos();
   if (tab === 'sugerencias' && !window._sugInit) { window._sugInit = true; sugFiltrar(); }
-  if (tab === 'asig') {
-    const ab = document.getElementById('asig-body');
-    if (ab) ab.style.display = 'block';
-    if (!window._asigInit) { window._asigInit = true; renderAsigLista(); }
+  if (tab === 'asig' && !asigPanelVisible) {
+    togglePanelAsig();
   }
 }
 
@@ -2814,7 +2811,7 @@ function catExportarPDF() {
   </div>
   <div class="meta">
     <strong>${fechaHoy}</strong>
-    Generado: 02/04/2026 14:09
+    Generado: 02/04/2026 14:16
   </div>
 </div>
 
@@ -2823,7 +2820,7 @@ ${busq || estado ? `<div class="filtros-banner"><span>Filtros aplicados:</span><
 ${seccionesHTML}
 
 <div class="footer">
-  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 14:09 &nbsp;&mdash;&nbsp; Confidencial
+  Moon Palace The Grand Punta Cana &nbsp;&mdash;&nbsp; Planificacion y Compras &nbsp;&mdash;&nbsp; 02/04/2026 14:16 &nbsp;&mdash;&nbsp; Confidencial
 </div>
 
 <script>window.onload = function() { window.print(); };</` + `script>
